@@ -1,0 +1,11 @@
+fastapi[all]
+uvicorn
+
+boto3
+
+pytest 
+pytest-asyncio
+httpx 
+flake8
+pytest-cov
+moto
