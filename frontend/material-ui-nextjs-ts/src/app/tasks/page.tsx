@@ -49,6 +49,27 @@ export default function TasksPage() {
     return <ErrorComponent errorMessage={`Error loading tasks: ${error}`} />;
   }
 
+  const handleUpdateTask = async (taskId, updatedTask) => {
+    try {
+      const response = await fetch(`${BASE_URL}/todos/${taskId}`, {
+        method: 'PUT', // or PATCH
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedTask),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const newTask = await response.json();
+      setTasks(tasks.map(task => task.id === taskId ? newTask : task)); // Update the task in the state
+    } catch (error) {
+      setError(error.message);
+      console.error("Failed to update task:", error);
+    }
+  };
 
   const handleCreateTask = async (newTask) => {
     try {
@@ -103,7 +124,7 @@ export default function TasksPage() {
           Tasks Page
         </Typography>
         <CreateTaskForm onCreate={handleCreateTask} />
-        <TasksList items={tasks} onDelete={handleDeleteTask}/>
+        <TasksList items={tasks} onDelete={handleDeleteTask} onEdit={handleUpdateTask}/>
       </Box>
     </Container>
   );
