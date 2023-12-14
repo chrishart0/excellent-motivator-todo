@@ -6,6 +6,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import ErrorComponent from '@/components/ErrorComponent';
 import TasksList from '@/components/TasksList';
+import CreateTaskForm from '@/components/CreateTaskForm';
+
 
 const BASE_URL = "http://localhost:8010"
 
@@ -21,6 +23,7 @@ async function getItems() {
     throw error;  // Re-throw the error to be caught in the component
   }
 }
+
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
@@ -47,6 +50,45 @@ export default function TasksPage() {
   }
 
 
+  const handleCreateTask = async (newTask) => {
+    try {
+      const response = await fetch(`${BASE_URL}/todos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newTask),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const createdTask = await response.json();
+      setTasks([...tasks, createdTask]); // Update the state to include the new task
+    } catch (error) {
+      setError(error.message);
+      console.error("Failed to create task:", error);
+    }
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    try {
+      const response = await fetch(`${BASE_URL}/todos/${taskId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      setTasks(tasks.filter(task => task.id !== taskId)); // Remove the task from the UI
+    } catch (error) {
+      setError(error.message);
+      console.error("Failed to delete task:", error);
+    }
+  };
+
   return (
     <Container>
       <Box
@@ -57,10 +99,11 @@ export default function TasksPage() {
           alignItems: 'center',
         }}
       >
-        <Typography variant="body1" gutterBottom>
+        <Typography variant="h1" gutterBottom>
           Tasks Page
         </Typography>
-        <TasksList items={tasks} />
+        <CreateTaskForm onCreate={handleCreateTask} />
+        <TasksList items={tasks} onDelete={handleDeleteTask}/>
       </Box>
     </Container>
   );

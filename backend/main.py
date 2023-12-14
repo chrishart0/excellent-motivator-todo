@@ -5,6 +5,7 @@ from models import ToDoItem
 import boto3
 from botocore.exceptions import ClientError
 from datetime import datetime
+import uuid
 
 app = FastAPI()
 
@@ -31,8 +32,10 @@ async def create_todo(todo: ToDoItem):
     try:
         # Add created and updated datestamps filter date to just the second
         item = todo.model_dump()
+        item['id'] = str(uuid.uuid4())
         item['created_at'] = datetime.utcnow().isoformat().split('.')[0]
         item['updated_at'] = datetime.utcnow().isoformat().split('.')[0]
+        item['owner'] = "chris"
         print(item)
         response = table.put_item(Item=item)
         return item
@@ -61,23 +64,30 @@ async def get_todo(id: str):
 @app.put("/todos/{id}")
 async def update_todo(id: str, todo_update: ToDoItem):
     try:
+        expression_values = {
+            ':t': todo_update.title,
+            ':d': todo_update.description,
+            ':s': todo_update.status,
+            ':u': datetime.utcnow().isoformat().split('.')[0]
+        }
+        expression_names = {
+            '#title': 'title',
+            '#desc': 'description',
+            '#status': 'status',
+            '#updated_at': 'updated_at'
+        }
+        update_expression = "set #title = :t, #desc = :d, #status = :s, #updated_at = :u"
+
+        if "due_date" in todo_update:
+            update_expression += ", #due_date = :dd"
+            expression_values[':dd'] = todo_update.due_date.isoformat()
+            expression_names['#due_date'] = 'due_date'
+
         response = table.update_item(
             Key={'id': id},
-            UpdateExpression="set #title = :t, #desc = :d, #status = :s, #due_date = :dd, #updated_at = :u",
-            ExpressionAttributeValues={
-                ':t': todo_update.title,
-                ':d': todo_update.description,
-                ':s': todo_update.status,
-                ':dd': todo_update.due_date.isoformat() if todo_update.due_date else None,
-                ':u': datetime.utcnow().isoformat().split('.')[0]
-            },
-            ExpressionAttributeNames={
-                '#title': 'title',
-                '#desc': 'description',
-                '#status': 'status',
-                '#due_date': 'due_date',
-                '#updated_at': 'updated_at'
-            },
+            UpdateExpression=update_expression,
+            ExpressionAttributeValues=expression_values,
+            ExpressionAttributeNames=expression_names,
             ReturnValues="UPDATED_NEW"
         )
         return response

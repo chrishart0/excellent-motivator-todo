@@ -11,8 +11,6 @@ async def test_post_todo():
     async with httpx.AsyncClient() as client:
         # Send a request to initiate the download
         response = await client.post(f"{BASE_URL}/todos", json={
-                    "id": "684bc66a-cd15-4a95-8c4b-90554e8a8b26",
-                    "owner": "string",
                     "title": "Unnamed todo item",
                     "description": "string",
                     "status": "ToDo",
@@ -27,7 +25,7 @@ async def test_post_todo():
         response_json = response.json()
 
         # Check that the response JSON contains the correct file path
-        assert response_json['owner'] == "string"
+        assert response_json['owner'] == "chris"
         assert response_json['title'] == "Unnamed todo item"
         assert response_json['description'] == "string"
 
