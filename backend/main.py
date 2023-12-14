@@ -90,7 +90,11 @@ async def update_todo(id: str, todo_update: ToDoItem):
             ExpressionAttributeNames=expression_names,
             ReturnValues="UPDATED_NEW"
         )
-        return response
+
+        # Now retrieve the updated item and return it to ensure it was updated
+        updated_item = table.get_item(Key={'id': id}).get('Item')
+        print(updated_item)
+        return updated_item
     except ClientError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import EditTaskForm from '@/components/EditTaskForm';
 
 const formatDate = (dateString) => {
+  if (!dateString) return '';
   return format(new Date(dateString), 'PPpp');
 };
 
@@ -38,6 +39,8 @@ function TasksList({ items, onDelete, onEdit }) {
     setOpen(false);
   };
 
+  console.log(items)
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
       {items.map(item => (
@@ -49,6 +52,7 @@ function TasksList({ items, onDelete, onEdit }) {
             <Typography sx={{ mb: 1.5 }} color="text.secondary">
               Owner: {item.owner}
             </Typography>
+            {/* ToDo: Description should render new lines, right not it eats /n */}
             <Typography variant="body2">
               {item.description}
             </Typography>

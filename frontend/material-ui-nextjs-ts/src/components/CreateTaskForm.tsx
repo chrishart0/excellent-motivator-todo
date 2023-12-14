@@ -25,6 +25,8 @@ const CreateTaskForm = ({ onCreate }) => {
       <TextField
         required
         fullWidth
+        multiline
+        rows={4}
         label="Description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}

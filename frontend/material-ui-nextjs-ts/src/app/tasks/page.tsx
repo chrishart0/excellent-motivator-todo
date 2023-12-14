@@ -64,7 +64,8 @@ export default function TasksPage() {
       }
 
       const newTask = await response.json();
-      setTasks(tasks.map(task => task.id === taskId ? newTask : task)); // Update the task in the state
+      console.log(newTask);
+      setTasks(tasks.map(task => task.id === taskId ? newTask.Attributes : task));
     } catch (error) {
       setError(error.message);
       console.error("Failed to update task:", error);
