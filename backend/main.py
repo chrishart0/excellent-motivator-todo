@@ -1,11 +1,26 @@
 # main.py
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from models import ToDoItem
 import boto3
 from botocore.exceptions import ClientError
 from datetime import datetime
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+    "http://localhost:3001",  
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Initialize Boto3 DynamoDB
 dynamodb = boto3.resource('dynamodb', endpoint_url="http://dynamodb-local:8000")
