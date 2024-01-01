@@ -43,7 +43,9 @@ function TasksList({ items, onDelete, onEdit }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      {items.map(item => (
+      {items.map(item => {
+        if (!item) return null;
+        return (
         <Card key={item.id} variant="outlined" sx={{ minWidth: 275 }}>
           <CardContent>
             <Typography variant="h5" component="div">
@@ -80,7 +82,8 @@ function TasksList({ items, onDelete, onEdit }) {
             </Button>
           </CardContent>
         </Card>
-      ))}
+      )
+      })}
       <Modal
         open={open}
         onClose={handleClose}

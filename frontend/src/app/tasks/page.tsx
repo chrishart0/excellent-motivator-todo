@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import ErrorComponent from '@/components/ErrorComponent';
 import TasksList from '@/components/TasksList';
 import CreateTaskForm from '@/components/CreateTaskForm';
+import { set } from 'date-fns';
 
 
 const BASE_URL = "http://localhost:8010"
@@ -64,8 +65,8 @@ export default function TasksPage() {
       }
 
       const newTask = await response.json();
-      console.log(newTask);
-      setTasks(tasks.map(task => task.id === taskId ? newTask.Attributes : task));
+      console.log("Updated task: ", newTask);
+      setTasks(tasks.map(task => task.id === taskId ? newTask : task)); // Update the state to include the new task
     } catch (error) {
       setError(error.message);
       console.error("Failed to update task:", error);
