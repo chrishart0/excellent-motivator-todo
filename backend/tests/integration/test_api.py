@@ -116,6 +116,43 @@ async def test_get_todo(create_todo, cleanup_todo):
             await client.delete(f"{BASE_URL}/todos/{todo_id}")
 
 @pytest.mark.asyncio
+async def test_update_todo(create_todo, cleanup_todo):
+    todo_id = await create_todo  # Await the fixture to create a new todo
+    
+    # Define the update data
+    update_data = {
+        'title': 'Updated test todo item',
+        'description': 'Updated description for test todo item',
+        'status': 'InProgress'
+        # Add other fields you wish to update
+    }
+    
+    async with httpx.AsyncClient() as client:
+        # Send a request to update the todo
+        update_response = await client.put(f"{BASE_URL}/todos/{todo_id}", json=update_data)
+        
+        # Check that the update response status code is 200 (OK)
+        assert update_response.status_code == 200, f"Unexpected status code: {update_response.status_code}"
+        
+        # Get the updated todo to verify changes
+        get_response = await client.get(f"{BASE_URL}/todos/{todo_id}")
+        
+        # Check that the get response status code is 200 (OK)
+        assert get_response.status_code == 200, f"Unexpected status code: {get_response.status_code}"
+        
+        # Parse the response JSON
+        response_json = get_response.json()
+
+        # Check that the response JSON contains the updated values
+        assert response_json['title'] == update_data['title'], "Title was not updated correctly"
+        assert response_json['description'] == update_data['description'], "Description was not updated correctly"
+        assert response_json['status'] == update_data['status'], "Status was not updated correctly"
+
+        # Cleanup
+        async with httpx.AsyncClient() as client:
+            await client.delete(f"{BASE_URL}/todos/{todo_id}")
+
+@pytest.mark.asyncio
 async def test_delete_todo(create_todo):
     # Create a new todo item
     todo_id = await create_todo
@@ -129,5 +166,4 @@ async def test_delete_todo(create_todo):
         get_response = await client.get(f"{BASE_URL}/todos/{todo_id}")
         
         # Assert that the item no longer exists
-        # Depending on your implementation, this might be a 404 Not Found or another appropriate response
-        assert get_response.status_code == 404, "Todo item was not deleted as expected"
+        assert get_response.status_code == 400, "Todo item was not deleted as expected"

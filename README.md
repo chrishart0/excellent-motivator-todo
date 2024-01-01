@@ -2,16 +2,8 @@
 
 ## Setup and Installation
 
-### Backend
-```shell
-# Create data dir
-mkdir -p .data/dynamodb
+Copy db.env.example into a new file called db.env and fill in a decent password
 
-# Build the container
-make build
-
-make run
-```
 
 ### Frontend
 ```shell
@@ -21,6 +13,37 @@ npm install
 
 npm run dev
 ```
+
+
+### Backend
+```shell
+# Create data dir
+mkdir -p .data/postgres
+
+# Build the container
+make build
+
+make run
+```
+#### Setup Postgres SQL db
+Once the containers are up and running, you can run the initial setup script to create the SQL DB
+```shell
+make setup-db
+```
+
+#### Using PG Admin
+If you'd like to get a GUI view for the data in the DB, you may use the pgAdmin container. 
+
+Connect at: <http://localhost:5050/>
+* User: admin@admin.com
+* Password: root
+
+Using the values in the db.env you created, you may connect to the DB. Remember that pgAdmin is running in a container, so you must use the container name `postgres` as the Host name, not localhost.
+
+### Launch the app!
+Visit the GUI and the API
+* <localhost:3000/tasks>
+* <localhost:8010/docs>
 
 ## Testing
 Right now the only tests are integration tests on the backend API

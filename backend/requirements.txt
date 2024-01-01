@@ -9,3 +9,4 @@ httpx
 flake8
 pytest-cov
 moto
+psycopg2-binary

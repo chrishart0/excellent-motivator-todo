@@ -2,8 +2,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from models import ToDoItem
-import boto3
-from botocore.exceptions import ClientError
 from datetime import datetime
 import uuid
 
@@ -24,12 +22,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-# Initialize Boto3 DynamoDB
-dynamodb = boto3.resource('dynamodb', endpoint_url="http://dynamodb-local:8000")
-table = dynamodb.Table('ToDoItems')
-
 
 @app.post("/todos")
 async def create_todo(todo: ToDoItem):
@@ -55,7 +47,10 @@ async def get_todo(id: str):
 
 @app.put("/todos/{id}")
 async def update_todo(id: str, todo_update: ToDoItem):
-    return db.update_todo(id, todo_update)
+    item = todo_update.model_dump()
+    item['updated_at'] = datetime.utcnow().isoformat().split('.')[0]
+    print(item)
+    return db.update_todo(id, item)
 
 @app.delete("/todos/{id}")
 async def delete_todo(id: str):

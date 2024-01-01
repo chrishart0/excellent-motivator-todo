@@ -3,6 +3,8 @@ services:
   api:
     build: ./backend
     container_name: excellent-motivator-api
+    env_file:
+      - db.env  # Use variables from the db.env file
     ports:
       - "8010:8010"
     volumes:
@@ -17,6 +19,28 @@ services:
     ports:
       - "8000:8000"
 
+  postgres:
+    image: postgres:16 
+    env_file:
+      - db.env 
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    volumes:
+     - pgadmin-data:/var/lib/pgadmin
+
+
 volumes:
   dynamodb_data:
     driver: local
@@ -24,4 +48,10 @@ volumes:
       type: none
       o: bind
       device: $PWD/.data/dynamodb
-
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: $PWD/.data/postgres
+  pgadmin-data:

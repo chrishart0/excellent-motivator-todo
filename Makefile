@@ -37,3 +37,7 @@ logs: ## Show the logs of the app
 .PHONY: shell
 shell: ## Open a shell in the app container
 	docker-compose exec api /bin/bash
+
+.PHONY: setup-db
+setup-db: ## Setup the database
+	docker-compose exec api python3 scripts/setup_postgres_db.py
