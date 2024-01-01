@@ -21,8 +21,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import ThemeRegistry from '@/components/ThemeRegistry/ThemeRegistry';
 
 export const metadata = {
-  title: 'Next.js App Router + Material UI v5',
-  description: 'Next.js App Router + Material UI v5',
+  title: 'Excellent Motivator - Your Personal Motivator',
+  description: 'Excellent Motivator - Your Personal Motivator',
 };
 
 const DRAWER_WIDTH = 240;
@@ -48,7 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Toolbar sx={{ backgroundColor: 'background.paper' }}>
               <DashboardIcon sx={{ color: '#444', mr: 2, transform: 'translateY(-2px)' }} />
               <Typography variant="h6" color="text.primary">
-                Next.js App Router
+                Excellent Motivator
               </Typography>
             </Toolbar>
           </AppBar>
