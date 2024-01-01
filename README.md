@@ -1,5 +1,33 @@
 # Python API for Productivity and Fitness Tracker
 
+## Setup and Installation
+
+### Backend
+```shell
+# Create data dir
+mkdir -p .data/dynamodb
+
+# Build the container
+make build
+
+make run
+```
+
+### Frontend
+```shell
+cd frontend
+
+npm install
+
+npm run dev
+```
+
+## Testing
+Right now the only tests are integration tests on the backend API
+```
+make test
+```
+
 ## Overview
 This multi-user API offers a comprehensive solution for managing daily tasks, planning activities, logging events, and tracking workouts. It's designed for secure, scalable user sign-ups and data isolation. The backend is built with FastAPI and the frontend with Next.js. The project uses the 3 Musketeers pattern (Docker, Docker Compose, Make) and includes comprehensive testing with Pytest and Playwright.
 
@@ -63,16 +91,6 @@ This multi-user API offers a comprehensive solution for managing daily tasks, pl
 - Utilize services like EC2, Elastic Beanstalk, and RDS.
 - Set up CI/CD pipelines using AWS CodePipeline or similar tools.
 
-## Setup and Installation
-
-```shell
-# Create data dir
-mkdir -p .data/dynamodb
-
-# Build the container
-make build
-
-```
 
 ## Usage
 (Examples and guides on using the API and frontend, including authentication.)
