@@ -55,3 +55,22 @@ async def update_todo(id: str, todo_update: ToDoItem):
 @app.delete("/todos/{id}")
 async def delete_todo(id: str):
     db.delete_todo(id)
+
+###############
+### Chatbot ###
+###############
+
+# Designing the API for making new chats and sending messages
+# POST /chat/new
+# POST /chat
+# GET /chat
+# GET /chat/{id}
+    
+
+@app.post("/chat/new")
+async def create_chat():
+    return "chat created"
+    
+@app.post("/chat")
+async def send_message(message: str):
+    return message
