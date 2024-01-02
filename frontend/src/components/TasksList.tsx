@@ -40,9 +40,7 @@ const KanbanColumn = {
   bgcolor: "grey.200",
   minHeight: "20vh",
   padding: "5px",
-  // margin: "3px",
   borderRadius: "5px",
-  // boxShadow: "0 0 5px rgba(0, 0, 0, 0.2)",
   border: "1px solid rgba(0, 0, 0, 0.2)",
 };
 
