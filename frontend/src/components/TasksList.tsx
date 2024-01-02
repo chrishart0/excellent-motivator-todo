@@ -11,7 +11,6 @@ import Grid from "@mui/material/Grid";
 import { DragDropContext, Droppable, Draggable, DroppableProps } from "react-beautiful-dnd";
 
 import EditTaskForm from "@/components/EditTaskForm";
-import updateTaskStatus from "@/utils/taskHelpers";
 
 const formatDate = (dateString) => {
   if (!dateString) return "";
@@ -27,6 +26,24 @@ const EditItemModal = {
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
+};
+
+const KanbanBoard = {
+  display: "flex",
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "flex-start",
+  paddingTop: "20px",
+};
+
+const KanbanColumn = {
+  bgcolor: "grey.200",
+  minHeight: "20vh",
+  padding: "5px",
+  // margin: "3px",
+  borderRadius: "5px",
+  // boxShadow: "0 0 5px rgba(0, 0, 0, 0.2)",
+  border: "1px solid rgba(0, 0, 0, 0.2)",
 };
 
 const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
@@ -53,7 +70,6 @@ const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
 function TasksList({ items, onDelete, onEdit }) {
   const [open, setOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
-  const [error, setError] = useState(null);
 
   const handleOpen = (task) => {
     setCurrentTask(task);
@@ -65,7 +81,7 @@ function TasksList({ items, onDelete, onEdit }) {
   };
 
   const handleOnDragEnd = (result) => {
-    const { source, destination, draggableId } = result; 
+    const { source, destination, draggableId } = result;
 
     if (!destination) return; // dropped outside the list
 
@@ -74,12 +90,19 @@ function TasksList({ items, onDelete, onEdit }) {
       source.index !== destination.index
     ) {
       console.log("Moving task from", source, "to", destination);
+
       // Call function to update the task status to the new status
-      
-    const taskId = draggableId;
-    const newStatus = destination.droppableId;
-    console.log("Updating task", taskId, "to status", newStatus);
-    updateTaskStatus(taskId, newStatus, setError)
+      const taskId = draggableId;
+      const newStatus = destination.droppableId;
+      console.log("Updating task", taskId, "to status", newStatus);
+      console.log(items)
+      // Find the task in the items array
+      const task = items.find((item) => item.id === taskId);
+      console.log("task: ", task)
+      console.log("task.status: ", task.status)
+      const updatedTask = { ...task, status: newStatus };
+
+      onEdit(task.id, updatedTask);
     }
   };
 
@@ -88,7 +111,7 @@ function TasksList({ items, onDelete, onEdit }) {
     return (
       <Grid item xs={12}>
         {/* Each card is an item in the column grid */}
-        <Card variant="outlined" sx={{ minWidth: 275 }}>
+        <Card variant="outlined" sx={{ minWidth: 270 }}>
           <CardContent>
             <Typography variant="h5" component="div">
               {cardProps.title}
@@ -140,8 +163,8 @@ function TasksList({ items, onDelete, onEdit }) {
 
   return (
     <DragDropContext onDragEnd={handleOnDragEnd}>
-      <Grid container spacing={2}>
-        <Grid item xs={12} sm={4}>
+      <Grid container spacing={2} sx={KanbanBoard}>
+        <Grid item sm={12} md={6} lg={4} sx={KanbanColumn}>
           <StrictModeDroppable droppableId="ToDo">
             {/* use a unique ID for each column */}
             {(provided, snapshot) => (
@@ -177,7 +200,7 @@ function TasksList({ items, onDelete, onEdit }) {
         </Grid>
 
         {/* Column for InProgress */}
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={4} sx={KanbanColumn}>
           <StrictModeDroppable droppableId="InProgress">
             {/* use a unique ID for each column */}
             {(provided, snapshot) => (
@@ -200,7 +223,7 @@ function TasksList({ items, onDelete, onEdit }) {
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        // ... more styling and props
+                      // ... more styling and props
                       >
                         {RenderCard(item)}
                       </div>
@@ -213,7 +236,7 @@ function TasksList({ items, onDelete, onEdit }) {
         </Grid>
 
         {/* Column for Done */}
-        <Grid item xs={12} sm={4}>
+        <Grid item xs={12} sm={4} sx={KanbanColumn}>
           <StrictModeDroppable droppableId="Done">
             {/* use a unique ID for each column */}
             {(provided, snapshot) => (
@@ -236,7 +259,7 @@ function TasksList({ items, onDelete, onEdit }) {
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        // ... more styling and props
+                      // ... more styling and props
                       >
                         {RenderCard(item)}
                       </div>
@@ -251,11 +274,11 @@ function TasksList({ items, onDelete, onEdit }) {
         <Modal
           open={open}
           onClose={handleClose}
-          // ... other modal props
+        // ... other modal props
         >
           <Box sx={EditItemModal}>
             {currentTask && (
-              <EditTaskForm task={currentTask} onUpdate={onEdit} />
+              <EditTaskForm task={currentTask} onEdit={onEdit} />
             )}
           </Box>
         </Modal>

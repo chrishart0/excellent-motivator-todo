@@ -18,18 +18,16 @@ const updateTask = async (taskId, updatedTask) => {
       console.log("Updated task: ", newTask);
       setTasks(tasks.map(task => task.id === taskId ? newTask : task)); // Update the state to include the new task
     } catch (error) {
-      setError(error.message);
       console.error("Failed to update task:", error);
     }
   };
 
-const updateTaskStatus = async (taskId, newStatus, setError) => {
+const updateTaskStatus = async (taskId, newStatus) => {
     try {
       const updatedTask = { status: newStatus };
       await updateTask(taskId, updatedTask);
       console.log(`Task ${taskId} status updated to ${newStatus}`);
     } catch (error) {
-      setError(error.message);
       console.error("Failed to update task status:", error);
     }
   };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
 
-const EditTaskForm = ({ task, onUpdate }) => {
+const EditTaskForm = ({ task, onEdit }) => {
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const [status, setStatus] = useState(task.status);
@@ -14,7 +14,7 @@ const EditTaskForm = ({ task, onUpdate }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onUpdate(task.id, { title, description, status });
+    onEdit(task.id, { title, description, status });
   };
 
   return (
