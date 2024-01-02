@@ -11,13 +11,7 @@ services:
       - ./backend:/app  # Mounts the local backend directory to /app in the container 
       - ~/.aws/:/root/.aws
     depends_on: 
-      - dynamodb-local
-
-  dynamodb-local:
-    image: "amazon/dynamodb-local:latest"
-    container_name: dynamodb-local
-    ports:
-      - "8000:8000"
+      - postgres
 
   postgres:
     image: postgres:16 
@@ -42,12 +36,6 @@ services:
 
 
 volumes:
-  dynamodb_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: $PWD/.data/dynamodb
   postgres_data:
     driver: local
     driver_opts:

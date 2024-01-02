@@ -8,5 +8,6 @@ class ToDoItem(BaseModel):
     title: str = "Unnamed todo item"
     description: Optional[str] = None
     status: str = "ToDo"
+    position: Optional[float] = None
 
     # ToDo: Run a check a todo doesn't already exist with this ID

@@ -41,3 +41,23 @@ shell: ## Open a shell in the app container
 .PHONY: setup-db
 setup-db: ## Setup the database
 	docker-compose exec api python3 scripts/setup_postgres_db.py
+	echo "Database setup"
+
+.PHONY: wipe-db
+wipe-db: ## Wipe the database
+	sudo rm -rf .data/postgres
+	mkdir .data/postgres
+	echo "Database wiped"
+
+restart-db: ## Restart the database
+	docker-compose restart postgres
+	sleep 5
+
+.PHONY: view-db
+view-db: ## View the database
+	@docker-compose exec api bash -c 'export PGPASSWORD=$$POSTGRES_PASSWORD && \
+	psql -U $$POSTGRES_USER -h $$POSTGRES_HOST -d $$POSTGRES_DB -c "SELECT * FROM todo_items LIMIT 10;"'
+
+.PHONE: recreate-db
+recreate-db: wipe-db restart-db setup-db view-db ## Recreate the database
+	
