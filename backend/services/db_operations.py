@@ -25,15 +25,22 @@ def get_db_connection(use_dict_cursor=False):
         conn.cursor_factory = RealDictCursor # Return results as a list of dicts instead of tuples
     return conn
 
+def get_next_position(conn, status):
+    with conn.cursor() as cur:
+        cur.execute("SELECT COALESCE(MAX(position), 0) + 100 FROM todo_items WHERE status = %s;", (status,))
+        return cur.fetchone()[0]
 
 def create_todo(item):
     conn = get_db_connection()
     cur = conn.cursor()
     try:
-         # Prepare the SQL query
+        # Calculate the new position for the given status
+        new_position = get_next_position(conn, item['status'])
+
+        # Prepare the SQL query
         cur.execute(
-            sql.SQL("INSERT INTO todo_items (id, title, description, status, created_at, updated_at, owner) VALUES (%s, %s, %s, %s, %s, %s, %s);"),
-            (item['id'], item['title'], item['description'], item['status'], item['created_at'], item['updated_at'], item['owner'])
+            sql.SQL("INSERT INTO todo_items (id, title, description, status, created_at, updated_at, owner, position) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"),
+            (item['id'], item['title'], item['description'], item['status'], item['created_at'], item['updated_at'], item['owner'], new_position)
         )
         conn.commit()
         return True

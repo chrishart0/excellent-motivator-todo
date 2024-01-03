@@ -33,12 +33,16 @@ example_item = {
     "id": "f9f5d7d2-8d4e-4f0a-9b1f-5e6d9d388f7f",
     "title": "Example Item",
     "description": "This is an example item created by initial db setup script.",
-    "status": "InProgress",
+    "status": "InProgress",  # or "ToDo", "Done"
     "created_at": "2021-06-20 12:00:00",
     "updated_at": "2021-06-20 12:00:00",
-    "owner": "chris",
-    "position": 1
+    "owner": "chris"
+    # Note: 'position' field is removed here
 }
+
+# Calculate the new position as one greater than the maximum current position for the given status
+cur.execute("SELECT COALESCE(MAX(position), 0) + 1 FROM todo_items WHERE status = %s;", (example_item['status'],))
+new_position = cur.fetchone()[0]
 
 # Define the INSERT statement
 insert_item_query = """
@@ -46,7 +50,7 @@ INSERT INTO todo_items (id, title, description, status, created_at, updated_at, 
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
 """
 
-# Execute the INSERT statement
+# Execute the INSERT statement with the new position
 cur.execute(insert_item_query, (
     example_item['id'],
     example_item['title'],
@@ -55,10 +59,9 @@ cur.execute(insert_item_query, (
     example_item['created_at'],
     example_item['updated_at'],
     example_item['owner'],
-    example_item['position']
+    new_position  # Using the new_position calculated from the database
 ))
 conn.commit()
-
 
 # Close the cursor and connection
 cur.close()

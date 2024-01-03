@@ -1,21 +1,13 @@
-import React, { useState, useEffect } from "react";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
+import React, { useState } from "react";
 import Typography from "@mui/material/Typography";
-import Chip from "@mui/material/Chip";
-import Button from "@mui/material/Button";
-import { format } from "date-fns";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { DragDropContext, Droppable, Draggable, DroppableProps } from "react-beautiful-dnd";
+import { DragDropContext, Draggable } from "react-beautiful-dnd";
 
 import EditTaskForm from "@/components/EditTaskForm";
-
-const formatDate = (dateString) => {
-  if (!dateString) return "";
-  return format(new Date(dateString), "PPpp");
-};
+import TaskCard from "@/components/TaskCard"
+import StrictModeDroppable from "@/components/StrictModeDroppable"
 
 const EditItemModal = {
   position: "absolute",
@@ -42,27 +34,6 @@ const KanbanColumn = {
   padding: "5px",
   borderRadius: "5px",
   border: "1px solid rgba(0, 0, 0, 0.2)",
-};
-
-const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
-  const [enabled, setEnabled] = useState(false);
-  const [error, setError] = useState(null);
-
-
-  useEffect(() => {
-    const animation = requestAnimationFrame(() => setEnabled(true));
-
-    return () => {
-      cancelAnimationFrame(animation);
-      setEnabled(false);
-    };
-  }, []);
-
-  if (!enabled) {
-    return null;
-  }
-
-  return <Droppable {...props}>{children}</Droppable>;
 };
 
 function TasksList({ items, onDelete, onEdit }) {
@@ -104,60 +75,10 @@ function TasksList({ items, onDelete, onEdit }) {
     }
   };
 
-  function RenderCard(cardProps) {
-    if (!cardProps) return null;
-    return (
-      <Grid item xs={12}>
-        {/* Each card is an item in the column grid */}
-        <Card variant="outlined" sx={{ minWidth: 270 }}>
-          <CardContent>
-            <Typography variant="h5" component="div">
-              {cardProps.title}
-            </Typography>
-            <Typography sx={{ mb: 1.5 }} color="text.secondary">
-              Owner: {cardProps.owner}
-            </Typography>
-            {/* ToDo: Description should render new lines, right not it eats /n */}
-            <Typography variant="body2">{cardProps.description}</Typography>
-            <Chip
-              label={cardProps.status}
-              color="primary"
-              style={{ marginTop: "10px" }}
-            />
-            <Typography
-              sx={{ fontSize: 14 }}
-              color="text.secondary"
-              gutterBottom
-            >
-              Created at: {formatDate(cardProps.created_at)}
-            </Typography>
-            <Typography sx={{ fontSize: 14 }} color="text.secondary">
-              Updated at: {formatDate(cardProps.updated_at)}
-            </Typography>
-            <Button
-              variant="outlined"
-              onClick={() => handleOpen(cardProps)}
-              sx={{ mt: 2 }}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => onDelete(cardProps.id)}
-              sx={{ mt: 2 }}
-            >
-              Delete
-            </Button>
-          </CardContent>
-        </Card>
-      </Grid>
-    );
-  }
-
-  const todoItems = items.filter((item) => item.status === "ToDo");
-  const inProgressItems = items.filter((item) => item.status === "InProgress");
-  const doneItems = items.filter((item) => item.status === "Done");
+  // Order todo items by item.position
+  const todoItems = items.filter((item) => item.status === "ToDo").sort((a, b) => b.position - a.position );
+  const inProgressItems = items.filter((item) => item.status === "InProgress").sort((a, b) => b.position - a.position );
+  const doneItems = items.filter((item) => item.status === "Done").sort((a, b) => b.position - a.position );
 
   return (
     <DragDropContext onDragEnd={handleOnDragEnd}>
@@ -186,7 +107,7 @@ function TasksList({ items, onDelete, onEdit }) {
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                       >
-                        {RenderCard(item)}
+                        <TaskCard cardProps={item} handleOpen={handleOpen} onDelete={onDelete}/>
                       </div>
                     )}
                   </Draggable>
@@ -223,7 +144,7 @@ function TasksList({ items, onDelete, onEdit }) {
                         {...provided.dragHandleProps}
                       // ... more styling and props
                       >
-                        {RenderCard(item)}
+                        <TaskCard cardProps={item} handleOpen={handleOpen} onDelete={onDelete}/>
                       </div>
                     )}
                   </Draggable>
@@ -259,7 +180,7 @@ function TasksList({ items, onDelete, onEdit }) {
                         {...provided.dragHandleProps}
                       // ... more styling and props
                       >
-                        {RenderCard(item)}
+                        <TaskCard cardProps={item} handleOpen={handleOpen} onDelete={onDelete}/>
                       </div>
                     )}
                   </Draggable>
