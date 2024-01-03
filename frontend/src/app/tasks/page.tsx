@@ -111,10 +111,15 @@ export default function TasksPage() {
     }
   };
 
-  const onMoveUp = async (taskId) => {
+  const onMoveUp = async (taskId, taskColumnList) => {
+    console.log("Move up task: ", taskId);
+
+    console.log("Task column list: ", taskColumnList);
   }
-  
-  // onMoveDown
+
+  const onMoveDown = async (taskId) => {
+    console.log("Move down task: ", taskId);
+  }
 
   return (
     <Container>
