@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+ 
 
-const EditTaskForm = ({ task, onEdit }) => {
+const EditTaskForm = ({ task, onEdit, setEditTaskModelOpen }) => {
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const [status, setStatus] = useState(task.status);
@@ -15,10 +17,18 @@ const EditTaskForm = ({ task, onEdit }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     onEdit(task.id, { title, description, status });
+    setEditTaskModelOpen(false)
   };
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+      {/* X button at top of card to close this form */}
+      <Button
+        onClick={() => setEditTaskModelOpen(false)}
+        sx={{ position: 'absolute', top: 0, right: 0 }}
+      >
+        <CloseIcon/>
+      </Button>
       <TextField
         required
         fullWidth

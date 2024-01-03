@@ -36,17 +36,17 @@ const KanbanColumn = {
   border: "1px solid rgba(0, 0, 0, 0.2)",
 };
 
-function TasksList({ items, onDelete, onEdit }) {
-  const [open, setOpen] = useState(false);
+function TasksList({ items, onDelete, onEdit, onMoveUp, onMoveDown }) {
+  const [editTaskModelOpen, setEditTaskModelOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
 
   const handleOpen = (task) => {
     setCurrentTask(task);
-    setOpen(true);
+    setEditTaskModelOpen(true);
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setEditTaskModelOpen(false);
   };
 
   const handleOnDragEnd = (result) => {
@@ -58,17 +58,11 @@ function TasksList({ items, onDelete, onEdit }) {
       source.droppableId !== destination.droppableId ||
       source.index !== destination.index
     ) {
-      console.log("Moving task from", source, "to", destination);
-
       // Call function to update the task status to the new status
       const taskId = draggableId;
       const newStatus = destination.droppableId;
-      console.log("Updating task", taskId, "to status", newStatus);
-      console.log(items)
       // Find the task in the items array
       const task = items.find((item) => item.id === taskId);
-      console.log("task: ", task)
-      console.log("task.status: ", task.status)
       const updatedTask = { ...task, status: newStatus };
 
       onEdit(task.id, updatedTask);
@@ -107,7 +101,7 @@ function TasksList({ items, onDelete, onEdit }) {
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                       >
-                        <TaskCard cardProps={item} handleOpen={handleOpen} onDelete={onDelete}/>
+                        <TaskCard cardProps={item} handleOpen={handleOpen} onDelete={onDelete} onMoveUp={onMoveUp} onMoveDown={onMoveDown}/>
                       </div>
                     )}
                   </Draggable>
@@ -191,13 +185,13 @@ function TasksList({ items, onDelete, onEdit }) {
         </Grid>
 
         <Modal
-          open={open}
+          open={editTaskModelOpen}
           onClose={handleClose}
         // ... other modal props
         >
           <Box sx={EditItemModal}>
             {currentTask && (
-              <EditTaskForm task={currentTask} onEdit={onEdit} />
+              <EditTaskForm task={currentTask} onEdit={onEdit} setEditTaskModelOpen={setEditTaskModelOpen} />
             )}
           </Box>
         </Modal>

@@ -111,6 +111,11 @@ export default function TasksPage() {
     }
   };
 
+  const onMoveUp = async (taskId) => {
+  }
+  
+  // onMoveDown
+
   return (
     <Container>
       <Box
