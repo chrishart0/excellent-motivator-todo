@@ -36,7 +36,7 @@ const KanbanColumn = {
   border: "1px solid rgba(0, 0, 0, 0.2)",
 };
 
-function TasksList({ items, onDelete, onEdit, onMoveUp, onMoveDown }) {
+function TasksList({ items, onDelete, onEdit }) {
   const [editTaskModelOpen, setEditTaskModelOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
 
@@ -69,133 +69,69 @@ function TasksList({ items, onDelete, onEdit, onMoveUp, onMoveDown }) {
     }
   };
 
-  // Order todo items by item.position
-  const todoItems = items.filter((item) => item.status === "ToDo").sort((a, b) => b.position - a.position );
-  const inProgressItems = items.filter((item) => item.status === "InProgress").sort((a, b) => b.position - a.position );
-  const doneItems = items.filter((item) => item.status === "Done").sort((a, b) => b.position - a.position );
+  // Function to handle moving a task up in the 
+  const handleMoveUp = async (taskId) => {
+
+  }
+
+  const handleMoveDown = async (taskId) => {
+  }
+
+  const getFilteredAndSortedItems = (status) => {
+    return items
+      .filter((item) => item.status === status)
+      .sort((a, b) => b.position - a.position);
+  };
 
   return (
     <DragDropContext onDragEnd={handleOnDragEnd}>
       <Grid container spacing={2} sx={KanbanBoard}>
-        <Grid item sm={12} md={6} lg={4} sx={KanbanColumn}>
-          <StrictModeDroppable droppableId="ToDo">
-            {/* use a unique ID for each column */}
-            {(provided, snapshot) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                style={
-                  {
-                    /* styling here */
-                  }
-                }
-              >
-                <Typography variant="h6" component="div">
-                  ToDo
-                </Typography>
-                {todoItems.map((item, index) => (
-                  <Draggable key={item.id} draggableId={String(item.id)} index={index}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <TaskCard cardProps={item} handleOpen={handleOpen} onDelete={onDelete} onMoveUp={onMoveUp} onMoveDown={onMoveDown}/>
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </StrictModeDroppable>
-        </Grid>
-
-        {/* Column for InProgress */}
-        <Grid item xs={12} sm={4} sx={KanbanColumn}>
-          <StrictModeDroppable droppableId="InProgress">
-            {/* use a unique ID for each column */}
-            {(provided, snapshot) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                style={
-                  {
-                    /* styling here */
-                  }
-                }
-              >
-                <Typography variant="h6" component="div">
-                  InProgress
-                </Typography>
-                {inProgressItems.map((item, index) => (
-                  <Draggable key={item.id} draggableId={String(item.id)} index={index}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      // ... more styling and props
-                      >
-                        <TaskCard cardProps={item} handleOpen={handleOpen} onDelete={onDelete}/>
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-              </div>
-            )}
-          </StrictModeDroppable>
-        </Grid>
-
-        {/* Column for Done */}
-        <Grid item xs={12} sm={4} sx={KanbanColumn}>
-          <StrictModeDroppable droppableId="Done">
-            {/* use a unique ID for each column */}
-            {(provided, snapshot) => (
-              <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
-                style={
-                  {
-                    /* styling here */
-                  }
-                }
-              >
-                <Typography variant="h6" component="div">
-                  Done
-                </Typography>
-                {doneItems.map((item, index) => (
-                  <Draggable key={item.id} draggableId={String(item.id)} index={index}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      // ... more styling and props
-                      >
-                        <TaskCard cardProps={item} handleOpen={handleOpen} onDelete={onDelete}/>
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-              </div>
-            )}
-          </StrictModeDroppable>
-        </Grid>
-
-        <Modal
-          open={editTaskModelOpen}
-          onClose={handleClose}
-        // ... other modal props
-        >
-          <Box sx={EditItemModal}>
-            {currentTask && (
-              <EditTaskForm task={currentTask} onEdit={onEdit} setEditTaskModelOpen={setEditTaskModelOpen} />
-            )}
-          </Box>
-        </Modal>
+        {['ToDo', 'InProgress', 'Done'].map((status) => (
+          <Grid key={status} item xs={12} sm={4} sx={KanbanColumn}>
+            <StrictModeDroppable droppableId={status}>
+              {(provided) => (
+                <div {...provided.droppableProps} ref={provided.innerRef}>
+                  <Typography variant="h6" component="div">
+                    {status}
+                  </Typography>
+                  {getFilteredAndSortedItems(status).map((item, index) => (
+                    <Draggable key={item.id} draggableId={String(item.id)} index={index}>
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                        >
+                          <TaskCard
+                            cardProps={item}
+                            handleOpen={handleOpen}
+                            onDelete={onDelete}
+                            onMoveUp={handleMoveUp}
+                            onMoveDown={handleMoveDown}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </StrictModeDroppable>
+          </Grid>
+        ))}
       </Grid>
+
+      <Modal open={editTaskModelOpen} onClose={handleClose}>
+        <Box sx={EditItemModal}>
+          {currentTask && (
+            <EditTaskForm
+              task={currentTask}
+              onEdit={onEdit}
+              setEditTaskModelOpen={setEditTaskModelOpen}
+            />
+          )}
+        </Box>
+      </Modal>
     </DragDropContext>
   );
 }
