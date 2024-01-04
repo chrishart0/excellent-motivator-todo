@@ -61,6 +61,11 @@ def get_all_todos():
     try:
         cur.execute("SELECT * FROM todo_items;")
         items = cur.fetchall()
+        # if final_item doesn't have position, give it a position of 0
+        for item in items:
+            if 'position' not in item:
+                item['position'] = 0
+
         return items  # Convert to a list of dicts if needed
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
