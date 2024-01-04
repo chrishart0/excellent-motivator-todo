@@ -44,7 +44,6 @@ const Sidebar = ({ isOpen, toggleDrawer, }: { isOpen: boolean; toggleDrawer: () 
         const handleOutsideClick = (event) => {
             if (isOpen && drawerRef.current) {
                 if (!drawerRef.current.contains(event.target)) {
-
                     toggleDrawer();
                 }
 
@@ -61,12 +60,10 @@ const Sidebar = ({ isOpen, toggleDrawer, }: { isOpen: boolean; toggleDrawer: () 
     // Drawer closes on any click outside of it
     return (
         <>
-            <AppBar position="fixed" sx={{ zIndex: 2000 }}>
-
+            <AppBar position="fixed" sx={{ zIndex: 2000 }} onClick={toggleDrawer}>
                 <Toolbar sx={{ backgroundColor: 'background.paper' }}>
                     <IconButton
                         aria-label="open drawer"
-                        onClick={toggleDrawer}
                         sx={{ mr: 2 }}
                     >
                         {isOpen ? <MenuOpenIcon sx={{ color: "#8B0000" }} /> : <MenuIcon />} {/* Toggle Icon if menu open or closed*/}
