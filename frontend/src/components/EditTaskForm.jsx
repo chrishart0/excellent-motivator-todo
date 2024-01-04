@@ -44,6 +44,8 @@ const EditTaskForm = ({ task, onEdit, setEditTaskModelOpen }) => {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         sx={{ mt: 1 }}
+        multiline
+        rows={4}
       />
       <FormControl fullWidth sx={{ mt: 1 }}>
         <InputLabel>Status</InputLabel>

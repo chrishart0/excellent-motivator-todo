@@ -32,10 +32,11 @@ async def create_todo(todo: ToDoItem):
     item['created_at'] = datetime.utcnow().isoformat().split('.')[0]
     item['updated_at'] = datetime.utcnow().isoformat().split('.')[0]
     item['owner'] = "chris"
-    print(item)
-    db.create_todo(item)
+    
+    final_item = db.create_todo(item)
+    print(final_item)
 
-    return item
+    return final_item
 
 @app.get("/todos")
 async def get_all_todos():

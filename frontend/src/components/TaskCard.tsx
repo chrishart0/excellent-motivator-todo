@@ -44,7 +44,13 @@ const TaskCard: React.FC<TaskCardProps> = ({ cardProps, handleOpen, onDelete, on
 
   return (
     <Grid item xs={12}>
-      <Card variant='outlined' sx={{ minWidth: 270 }}>
+      <Card variant='outlined' sx={{
+        minWidth: 270,
+        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', // subtle shadow
+        '&:hover': {
+          boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.15)', // more pronounced shadow on hover
+        },
+      }}>
         <CardContent>
           <Typography variant='h5' component='div'>
             {cardProps.title}

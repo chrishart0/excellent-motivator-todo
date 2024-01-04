@@ -43,7 +43,11 @@ def create_todo(item):
             (item['id'], item['title'], item['description'], item['status'], item['created_at'], item['updated_at'], item['owner'], new_position)
         )
         conn.commit()
-        return True
+
+        # Retrieve the newly created item and return it
+        return get_todo(item['id'])
+    
+
     except Exception as e:
         conn.rollback()
         raise HTTPException(status_code=400, detail=str(e))
@@ -85,8 +89,8 @@ def update_todo(id, todo_update):
     try:
         # Prepare the SQL query for updating
         cur.execute(
-            sql.SQL("UPDATE todo_items SET title = %s, description = %s, status = %s, updated_at = %s WHERE id = %s;"),
-            (todo_update['title'], todo_update['description'], todo_update['status'], datetime.utcnow(), id)
+            sql.SQL("UPDATE todo_items SET title = %s, description = %s, status = %s, position = %s, updated_at = %s WHERE id = %s;"),
+            (todo_update['title'], todo_update['description'], todo_update['status'], todo_update['position'], datetime.utcnow(), id)
         )
         conn.commit()
         return get_todo(id)  # Retrieve the updated item

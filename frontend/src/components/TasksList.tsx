@@ -1,128 +1,208 @@
-import React, { useState } from "react";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import { DragDropContext, Draggable } from "react-beautiful-dnd";
+// frontend/src/components/TasksList.tsx
+import React, { useState, useCallback, useMemo, useRef } from 'react';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import { DragDropContext, Draggable } from 'react-beautiful-dnd';
 
-import EditTaskForm from "@/components/EditTaskForm";
-import TaskCard from "@/components/TaskCard"
-import StrictModeDroppable from "@/components/StrictModeDroppable"
+import EditTaskForm from '@/components/EditTaskForm';
+import TaskCard from '@/components/TaskCard';
+import StrictModeDroppable from '@/components/StrictModeDroppable';
 
-const EditItemModal = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
+// Move styles to a separate file to keep your component file clean
+import { EditItemModalStyle, KanbanBoardStyle, KanbanColumnStyle, ColumnHeaderStyle } from "@/components/TasksList.styles"
 
-const KanbanBoard = {
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "space-between",
-  alignItems: "flex-start",
-  paddingTop: "20px",
-};
-
-const KanbanColumn = {
-  bgcolor: "grey.200",
-  minHeight: "20vh",
-  padding: "5px",
-  borderRadius: "5px",
-  border: "1px solid rgba(0, 0, 0, 0.2)",
-};
-
-function TasksList({ items, onDelete, onEdit }) {
+function TasksList({ items, setTasks, onDelete, onEdit }) {
   const [editTaskModelOpen, setEditTaskModelOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
 
-  const handleOpen = (task) => {
+  const handleOpenEditModel = (task) => {
     setCurrentTask(task);
     setEditTaskModelOpen(true);
   };
 
-  const handleClose = () => {
+  const handleCloseEditModel = () => {
     setEditTaskModelOpen(false);
   };
 
-  const handleOnDragEnd = (result) => {
+  const handleOnDragEnd = useCallback((result) => {
     const { source, destination, draggableId } = result;
 
-    if (!destination) return; // dropped outside the list
+    // Dropped outside the list or no movement
+    if (!destination || (source.droppableId === destination.droppableId && source.index === destination.index)) {
+      return;
+    }
 
-    if (
-      source.droppableId !== destination.droppableId ||
-      source.index !== destination.index
-    ) {
-      // Call function to update the task status to the new status
-      const taskId = draggableId;
-      const newStatus = destination.droppableId;
-      // Find the task in the items array
-      const task = items.find((item) => item.id === taskId);
-      const updatedTask = { ...task, status: newStatus };
+    const task = items.find(item => item.id === draggableId);
+    if (!task) return; // Task not found
 
-      onEdit(task.id, updatedTask);
+    // Sort items of destination column in descending order of position
+    const destinationItems = items.filter(item => item.status === destination.droppableId)
+      .sort((a, b) => b.position - a.position) // 200 is higher than 100
+      .filter(item => item.id !== task.id); // Remove dragged task from the list if present
+
+
+    console.log("Destination items: ", destinationItems)
+
+    let newPosition;
+    if (destinationItems.length === 0) {
+      // If the destination column is empty
+      newPosition = 1;
+    } else if (destination.index === 0) {
+      // If the card is moved to the top of the column
+      newPosition = destinationItems[0].position + 1;
+    } else if (destination.index === destinationItems.length) {
+      // If the card is moved to the bottom of the column
+      newPosition = destinationItems[destinationItems.length - 1].position - 1;
+    } else {
+      // If the card is placed between two other cards
+      const aboveItem = destinationItems[destination.index - 1];
+      const belowItem = destinationItems[destination.index];
+      newPosition = (aboveItem.position + belowItem.position) / 2;
+    }
+
+    // Construct the updated task
+    const updatedTask = { ...task, status: destination.droppableId, position: newPosition };
+
+    // Update the task using the provided onEdit function
+    onEdit(task.id, updatedTask);
+
+    // Update the parent state with the new task data
+    setTasks(currentItems => {
+      return currentItems.map(item => item.id === updatedTask.id ? updatedTask : item);
+    });
+  }, [items, setTasks, onEdit]);
+
+
+  // ToDo: move these large, non-rendering related functions outside of your component
+  // Function to handle moving a task up in the list (towards a higher position)
+  const handleMoveUp = async (taskId) => {
+    const currentTask = items.find(item => item.id === taskId);
+    if (!currentTask) return; // Early exit if task not found
+
+    // Get tasks with the same status and sort them in descending order of position
+    const sameColumnItems = items.filter(item => item.status === currentTask.status)
+      .sort((a, b) => b.position - a.position);
+    const currentIndex = sameColumnItems.findIndex(item => item.id === taskId);
+
+    if (currentIndex > 0) { // Check if it's not already the topmost item in its column
+      const itemAbove = sameColumnItems[currentIndex - 1];
+      // Swap positions (increase currentTask position to move it up)
+      const updatedTask = { ...currentTask, position: itemAbove.position };
+      const updatedItemAbove = { ...itemAbove, position: currentTask.position };
+
+      await onEdit(taskId, updatedTask); // Update the current task
+      await onEdit(itemAbove.id, updatedItemAbove); // Update the task above
+
+      setTasks(currentItems => {
+        return currentItems.map(item => {
+          if (item.id === updatedTask.id) {
+            return updatedTask;
+          } else if (item.id === updatedItemAbove.id) {
+            return updatedItemAbove;
+          }
+          return item;
+        });
+      });
     }
   };
 
-  // Function to handle moving a task up in the 
-  const handleMoveUp = async (taskId) => {
-
-  }
-
+  // Function to handle moving a task down in the list (towards a lower position)
   const handleMoveDown = async (taskId) => {
-  }
+    const currentTask = items.find(item => item.id === taskId);
+    if (!currentTask) return; // Early exit if task not found
 
-  const getFilteredAndSortedItems = (status) => {
-    return items
-      .filter((item) => item.status === status)
+    // Get tasks with the same status and sort them in descending order of position
+    const sameColumnItems = items.filter(item => item.status === currentTask.status)
       .sort((a, b) => b.position - a.position);
+    const currentIndex = sameColumnItems.findIndex(item => item.id === taskId);
+    console.log("Current index: ", currentIndex);
+    console.log("Same column items: ", sameColumnItems);
+
+    if (currentIndex < sameColumnItems.length - 1) { // Check if it's not already the bottom item in its column
+      const itemBelow = sameColumnItems[currentIndex + 1];
+      console.log("Item below position: ", itemBelow.position);
+      console.log("Current task position: ", currentTask.position);
+      // Swap positions (decrease currentTask position to move it down)
+      const updatedTask = { ...currentTask, position: itemBelow.position };
+      const updatedItemBelow = { ...itemBelow, position: currentTask.position };
+
+      await onEdit(taskId, updatedTask); // Update the current task
+      await onEdit(itemBelow.id, updatedItemBelow); // Update the task below
+
+      // Update the parent state with the new positions
+      setTasks(currentItems => {
+        return currentItems.map(item => {
+          if (item.id === updatedTask.id) {
+            return updatedTask;
+          } else if (item.id === updatedItemBelow.id) {
+            return updatedItemBelow;
+          }
+          return item;
+        });
+      });
+    } else { console.log("Already at bottom of column") }
   };
+
+  // Memoize the statuses to prevent unnecessary re-renders
+  const statuses = useMemo(() => ['ToDo', 'InProgress', 'Done'], []);
+
+  // Use useMemo to avoid unnecessary recalculations
+  const getFilteredAndSortedItems = useCallback(
+    (status) => {
+      return items
+        .filter((item) => item.status === status)
+        .sort((a, b) => b.position - a.position); // 200 is higher than 100
+    },
+    [items]
+  );
 
   return (
     <DragDropContext onDragEnd={handleOnDragEnd}>
-      <Grid container spacing={2} sx={KanbanBoard}>
-        {['ToDo', 'InProgress', 'Done'].map((status) => (
-          <Grid key={status} item xs={12} sm={4} sx={KanbanColumn}>
-            <StrictModeDroppable droppableId={status}>
-              {(provided) => (
-                <div {...provided.droppableProps} ref={provided.innerRef}>
-                  <Typography variant="h6" component="div">
-                    {status}
-                  </Typography>
-                  {getFilteredAndSortedItems(status).map((item, index) => (
-                    <Draggable key={item.id} draggableId={String(item.id)} index={index}>
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                          <TaskCard
-                            cardProps={item}
-                            handleOpen={handleOpen}
-                            onDelete={onDelete}
-                            onMoveUp={handleMoveUp}
-                            onMoveDown={handleMoveDown}
-                          />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </StrictModeDroppable>
-          </Grid>
-        ))}
-      </Grid>
+      <Box sx={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
+        <Typography variant="h2" gutterBottom>
+          Tasks
+        </Typography>
+        <Grid container spacing={2} sx={KanbanBoardStyle}>
+          {statuses.map((status) => (
+            <Grid key={status} item xs={4} sx={KanbanColumnStyle}>
+              <Typography variant="h6" component="div" sx={ColumnHeaderStyle}>
+                {status}
+              </Typography>
+              <StrictModeDroppable droppableId={status}>
+                {(provided) => (
+                  <div style={{minHeight: "40vh"}} {...provided.droppableProps} ref={provided.innerRef}>
+                    {getFilteredAndSortedItems(status).map((item, index) => (
+                      <Draggable key={item.id} draggableId={String(item.id)} index={index}>
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            <TaskCard
+                              cardProps={item}
+                              handleOpen={handleOpenEditModel}
+                              onDelete={onDelete}
+                              onMoveUp={handleMoveUp}
+                              onMoveDown={handleMoveDown}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </StrictModeDroppable>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
 
-      <Modal open={editTaskModelOpen} onClose={handleClose}>
-        <Box sx={EditItemModal}>
+      <Modal open={editTaskModelOpen} onClose={handleCloseEditModel}>
+        <Box sx={EditItemModalStyle}>
           {currentTask && (
             <EditTaskForm
               task={currentTask}

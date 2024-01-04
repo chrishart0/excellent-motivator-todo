@@ -63,6 +63,9 @@ async def test_post_todo():
         assert response_json['title'] == "Integration test todo item POST test"
         assert response_json['description'] == "Integration test todo item POST test"
 
+        # Check that there is a position and it is greater than 0
+        assert response_json['position'] > 0
+
         # Cleanup
         todo_id = response.json()['id']
         async with httpx.AsyncClient() as client:

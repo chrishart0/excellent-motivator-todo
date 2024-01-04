@@ -88,6 +88,7 @@ export default function TasksPage() {
   
       const createdTask = await response.json();
       setTasks([...tasks, createdTask]); // Update the state to include the new task
+      console.log("Created task: ", createdTask);
     } catch (error) {
       setError(error.message);
       console.error("Failed to create task:", error);
@@ -135,7 +136,7 @@ export default function TasksPage() {
           Tasks Page
         </Typography>
         <CreateTaskForm onCreate={handleCreateTask} />
-        <TasksList items={tasks} onDelete={handleDeleteTask} onEdit={handleUpdateTask}/>
+        <TasksList items={tasks}  setTasks={setTasks} onDelete={handleDeleteTask} onEdit={handleUpdateTask}/>
       </Box>
     </Container>
   );

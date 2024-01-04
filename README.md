@@ -57,9 +57,10 @@ This multi-user API offers a comprehensive solution for managing daily tasks, pl
 ## Features
 1. **To-Do List**: Add, update, delete, and categorize tasks.
 2. **Daily / Weekly Planner**: Schedule and view activities.
-3. **Log**: Record and retrieve activity logs.
+3. **Workout Log**: Record and retrieve activity logs.
 4. **Workout Tracker**: Manage workout routines and track progress.
 5. **Authentication**: Secure user authentication and authorization.
+6. **Discord Chat**: Daily AI chat via discord build with langchain and OpenAI which checks in on todo list progress, helps to build daily / weekly plan, etc
 
 ## API Specification
 ### Endpoints
