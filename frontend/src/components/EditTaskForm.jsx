@@ -38,7 +38,6 @@ const EditTaskForm = ({ task, onEdit, setEditTaskModelOpen }) => {
         sx={{ mt: 1 }}
       />
       <TextField
-        required
         fullWidth
         label="Description"
         value={description}

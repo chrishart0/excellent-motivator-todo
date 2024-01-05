@@ -13,6 +13,7 @@ app = FastAPI()
 origins = [
     "http://localhost:3000",
     "http://localhost:3001",  
+    "http://192.168.1.216:3000",
 ]
 
 app.add_middleware(
@@ -39,6 +40,7 @@ async def create_todo(todo: ToDoItem):
     final_item = db.create_todo(item)
     print(final_item)
 
+  
     return final_item
 
 @app.get("/todos")
