@@ -34,7 +34,7 @@ async def create_todo(todo: ToDoItem):
     item['created_at'] = datetime.utcnow().isoformat().split('.')[0]
     item['updated_at'] = datetime.utcnow().isoformat().split('.')[0]
     item['owner'] = "chris"
-    print("updated item",  item)
+    print("item",  item)
     
     final_item = db.create_todo(item)
     print(final_item)
@@ -53,7 +53,7 @@ async def get_todo(id: str):
 async def update_todo(id: str, todo_update: ToDoItem):
     item = todo_update.model_dump()
     item['updated_at'] = datetime.utcnow().isoformat().split('.')[0]
-    print(item)
+    print("update_todo:", item)
     return db.update_todo(id, item)
 
 @app.delete("/todos/{id}")

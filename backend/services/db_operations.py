@@ -6,11 +6,29 @@ from psycopg2.extras import RealDictCursor
 from psycopg2 import sql
 from fastapi import HTTPException
 from botocore.exceptions import ClientError
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Initialize Boto3 DynamoDB
 dynamodb = boto3.resource('dynamodb', endpoint_url="http://dynamodb-local:8000")
 table = dynamodb.Table('ToDoItems')
+
+def item_post_processing(item):
+    if 'position' not in item:
+        item['position'] = 0
+    if 'due_date' in item and not item['due_date'] is None:
+        due_date = item['due_date']
+        if item['due_date'] < datetime.utcnow():
+            item['due_status'] = "today"
+            # Due date is in the past, not counting today
+            # Round up due date to the next day
+            due_date = due_date.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+            if due_date < datetime.utcnow():
+                item['due_status'] = "overdue"
+        else:
+            item['due_status'] = None
+    else :
+        item['due_status'] = None
+    return item
 
 # Connect to PostgreSQL
 # Establish a connection to the PostgreSQL database
@@ -63,8 +81,7 @@ def get_all_todos():
         items = cur.fetchall()
         # if final_item doesn't have position, give it a position of 0
         for item in items:
-            if 'position' not in item:
-                item['position'] = 0
+            item = item_post_processing(item)
 
         return items  # Convert to a list of dicts if needed
     except Exception as e:
@@ -80,6 +97,7 @@ def get_todo(id):
         cur.execute("SELECT * FROM todo_items WHERE id = %s;", (id,))
         item = cur.fetchone()
         if item:
+            item = item_post_processing(item)
             return item  # Convert to dict if necessary
         raise HTTPException(status_code=404, detail="Item not found")
     except Exception as e:

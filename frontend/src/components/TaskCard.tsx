@@ -20,6 +20,7 @@ interface CardProps {
   created_at: string;
   updated_at: string;
   due_date?: string;
+  due_status: string;
 }
 
 interface TaskCardProps {
@@ -41,8 +42,23 @@ const formatDate = (dateString: string): string => {
   }
 };
 
+
+const isDatePastDue = (due_status: string): boolean => {
+  try {
+    // Compare the current time with the end of the due date
+    if (due_status === 'overdue') {
+      return true;
+    }
+  } catch (error) {
+    console.error('Error checking date:', error);
+    return false;
+  }
+};
+
 const TaskCard: React.FC<TaskCardProps> = ({ cardProps, handleOpen, onDelete, onMoveUp, onMoveDown }) => {
   if (!cardProps) return null;
+  const dueDatePassed = cardProps.due_date ? isDatePastDue(cardProps.due_status) : false;
+
 
   return (
     <Grid item xs={12}>
@@ -64,8 +80,12 @@ const TaskCard: React.FC<TaskCardProps> = ({ cardProps, handleOpen, onDelete, on
             {cardProps.description}
           </Typography>
           {cardProps.due_date && (
-            <Typography sx={{ fontSize: 14 }} color='primary' display='block'>
-              <strong>Due Date:</strong> {formatDate(cardProps.due_date)}
+            <Typography
+              sx={{ fontSize: 14, mt: 2 }}
+              color={dueDatePassed ? 'error' : 'primary'}
+              display='block'
+            >
+              <strong>{dueDatePassed ? 'Overdue!' : 'Due Date:'}</strong> {formatDate(cardProps.due_date)}
             </Typography>
           )}
           <Chip

@@ -4,6 +4,13 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import TodayIcon from '@mui/icons-material/Today';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import Tooltip from '@mui/material/Tooltip';
+import Button from '@mui/material/Button';
+
 import { DragDropContext, Draggable } from 'react-beautiful-dnd';
 
 import EditTaskForm from '@/components/EditTaskForm';
@@ -16,6 +23,12 @@ import { EditItemModalStyle, KanbanBoardStyle, KanbanColumnStyle, ColumnHeaderSt
 function TasksList({ items, setTasks, onDelete, onEdit }) {
   const [editTaskModelOpen, setEditTaskModelOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
+  const [showOnlyDueToday, setShowOnlyDueToday] = useState(false);
+  const [showOnlyOverdue, setShowOnlyOverdue] = useState(false);
+
+  const toggleShowOnlyDueToday = () => setShowOnlyDueToday((prev) => !prev);
+  const toggleShowOnlyOverdue = () => setShowOnlyOverdue((prev) => !prev);
+
 
   const handleOpenEditModel = (task) => {
     setCurrentTask(task);
@@ -24,6 +37,12 @@ function TasksList({ items, setTasks, onDelete, onEdit }) {
 
   const handleCloseEditModel = () => {
     setEditTaskModelOpen(false);
+  };
+
+  // Reset function for filters
+  const resetFilters = () => {
+    setShowOnlyDueToday(false);
+    setShowOnlyOverdue(false);
   };
 
   const handleOnDragEnd = useCallback((result) => {
@@ -148,22 +167,81 @@ function TasksList({ items, setTasks, onDelete, onEdit }) {
   // Use useMemo to avoid unnecessary recalculations
   const getFilteredAndSortedItems = useCallback(
     (status) => {
-      return items
+      let filteredItems = items
         .filter((item) => item.status === status)
-        .sort((a, b) => b.position - a.position); // 200 is higher than 100
+        .sort((a, b) => b.position - a.position);
+
+      if (showOnlyDueToday && showOnlyOverdue) {
+        // Show items that are either due today or overdue
+        filteredItems = filteredItems.filter((item) => item.due_status === "today" || item.due_status === "overdue");
+      } else if (showOnlyDueToday) {
+        // Show only items that are due today
+        filteredItems = filteredItems.filter((item) => item.due_status === "today");
+      } else if (showOnlyOverdue) {
+        // Show only items that are overdue
+        filteredItems = filteredItems.filter((item) => item.due_status === "overdue");
+      }
+
+      return filteredItems;
     },
-    [items]
+    [items, showOnlyDueToday, showOnlyOverdue]
   );
 
   return (
     <DragDropContext onDragEnd={handleOnDragEnd}>
-      <Box sx={{width: '100vw', }}>
-        <Box sx={{ overflowX: 'auto', minWidth:'100vw', width: '100vw',  WebkitOverflowScrolling: 'touch'}}>
+      {/* Filter buttons */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
+        <ToggleButtonGroup
+          value={[]}
+          exclusive
+          onChange={(event, newAlignment) => {
+            if (newAlignment !== null) {
+              setShowOnlyDueToday(newAlignment.includes('today'));
+              setShowOnlyOverdue(newAlignment.includes('overdue'));
+            }
+          }}
+          aria-label="text formatting"
+        >
+          <Tooltip title="Show only tasks due today">
+            <ToggleButton
+              value="today"
+              selected={showOnlyDueToday}
+              onChange={toggleShowOnlyDueToday}
+              aria-label="Show only due today"
+            >
+              <TodayIcon />
+              &nbsp;Due Today
+            </ToggleButton>
+          </Tooltip>
+
+          <Tooltip title="Show only overdue tasks">
+            <ToggleButton
+              value="overdue"
+              selected={showOnlyOverdue}
+              onChange={toggleShowOnlyOverdue}
+              aria-label="Show only overdue"
+            >
+              <ErrorOutlineIcon />
+              &nbsp;Overdue
+            </ToggleButton>
+          </Tooltip>
+        </ToggleButtonGroup>
+
+        <Button
+            variant="outlined"
+            onClick={resetFilters}
+            aria-label="Reset filters"
+          >
+            Reset Filters
+          </Button>
+      </Box>
+      <Box sx={{ width: '100vw', }}>
+        <Box sx={{ overflowX: 'auto', minWidth: '100vw', width: '100vw', WebkitOverflowScrolling: 'touch' }}>
           <Grid container sx={KanbanBoardStyle}>
             {statuses.map((status) => (
               <StrictModeDroppable droppableId={status} >
                 {(provided) => (
-                  <div style={{ minHeight: "40vh"}} {...provided.droppableProps} ref={provided.innerRef}>
+                  <div style={{ minHeight: "40vh" }} {...provided.droppableProps} ref={provided.innerRef}>
                     <Grid key={status} item xs={4} sx={KanbanColumnStyle}>
                       <Typography variant="h6" component="div" sx={ColumnHeaderStyle}>
                         {status}
