@@ -19,6 +19,7 @@ interface CardProps {
   status: string;
   created_at: string;
   updated_at: string;
+  due_date?: string;
 }
 
 interface TaskCardProps {
@@ -32,7 +33,8 @@ interface TaskCardProps {
 const formatDate = (dateString: string): string => {
   if (!dateString) return '';
   try {
-    return format(new Date(dateString), 'PPpp');
+    // Updated to show only the date in a nice format (e.g., January 1, 2024)
+    return format(new Date(dateString), 'PPP');
   } catch (error) {
     console.error('Invalid date format:', error);
     return 'Invalid date';
@@ -61,6 +63,11 @@ const TaskCard: React.FC<TaskCardProps> = ({ cardProps, handleOpen, onDelete, on
           <Typography variant='body2' style={{ whiteSpace: 'pre-wrap' }}>
             {cardProps.description}
           </Typography>
+          {cardProps.due_date && (
+            <Typography sx={{ fontSize: 14 }} color='primary' display='block'>
+              <strong>Due Date:</strong> {formatDate(cardProps.due_date)}
+            </Typography>
+          )}
           <Chip
             label={cardProps.status}
             color='primary'
