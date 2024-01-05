@@ -8,6 +8,10 @@ import uuid
 # Utils
 import services.db_operations as db
 
+# Set up logging
+import utils.logger as logger
+logger = logger.get_logger()
+
 app = FastAPI()
 
 origins = [
@@ -53,10 +57,13 @@ async def get_todo(id: str):
 
 @app.put("/todos/{id}")
 async def update_todo(id: str, todo_update: ToDoItem):
-    item = todo_update.model_dump()
-    item['updated_at'] = datetime.utcnow().isoformat().split('.')[0]
-    print("update_todo:", item)
-    return db.update_todo(id, item)
+    try:
+        item = todo_update.model_dump()
+        item['updated_at'] = datetime.utcnow().isoformat().split('.')[0]
+        print("update_todo:", item)
+        return db.update_todo(id, item)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.delete("/todos/{id}")
 async def delete_todo(id: str):

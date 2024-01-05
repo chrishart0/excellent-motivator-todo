@@ -8,6 +8,12 @@ from fastapi import HTTPException
 from botocore.exceptions import ClientError
 from datetime import datetime, timedelta
 
+# Set up logging
+import utils.logger as logger
+logger = logger.get_logger()
+
+
+
 # Initialize Boto3 DynamoDB
 dynamodb = boto3.resource('dynamodb', endpoint_url="http://dynamodb-local:8000")
 table = dynamodb.Table('ToDoItems')
@@ -15,19 +21,25 @@ table = dynamodb.Table('ToDoItems')
 def item_post_processing(item):
     if 'position' not in item:
         item['position'] = 0
-    if 'due_date' in item and not item['due_date'] is None:
-        due_date = item['due_date']
-        if item['due_date'] < datetime.utcnow():
-            item['due_status'] = "today"
-            # Due date is in the past, not counting today
-            # Round up due date to the next day
-            due_date = due_date.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
-            if due_date < datetime.utcnow():
-                item['due_status'] = "overdue"
-        else:
+    try:
+        if 'due_date' in item and not item['due_date'] is None:
+            due_date = item['due_date']
+            if item['due_date'] < datetime.utcnow():
+                item['due_status'] = "today"
+                # Due date is in the past, not counting today
+                # Round up due date to the next day
+                due_date = due_date.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+                if due_date < datetime.utcnow():
+                    item['due_status'] = "overdue"
+            else:
+                item['due_status'] = None
+        else :
             item['due_status'] = None
-    else :
+    except Exception as e:
         item['due_status'] = None
+        logger.error("Couldn't process due_status for:", item)
+        logger.error(e)
+
     return item
 
 # Connect to PostgreSQL
@@ -112,13 +124,14 @@ def update_todo(id, todo_update):
     try:
         # Prepare the SQL query for updating
         cur.execute(
-            sql.SQL("UPDATE todo_items SET title = %s, description = %s, status = %s, position = %s, updated_at = %s WHERE id = %s;"),
-            (todo_update['title'], todo_update['description'], todo_update['status'], todo_update['position'], datetime.utcnow(), id)
+            sql.SQL("UPDATE todo_items SET title = %s, description = %s, status = %s, position = %s, due_date = %s, updated_at = %s WHERE id = %s;"),
+            (todo_update['title'], todo_update['description'], todo_update['status'], todo_update['position'], todo_update['due_date'], datetime.utcnow(), id)
         )
         conn.commit()
         return get_todo(id)  # Retrieve the updated item
     except Exception as e:
         conn.rollback()
+        logger.error(e)
         raise HTTPException(status_code=400, detail=str(e))
     finally:
         cur.close()

@@ -54,6 +54,9 @@ view-db: ## View the database
 	@docker-compose exec api bash -c 'export PGPASSWORD=$$POSTGRES_PASSWORD && \
 	psql -U $$POSTGRES_USER -h $$POSTGRES_HOST -d $$POSTGRES_DB -c "SELECT * FROM todo_items LIMIT 10;"'
 
+	# PGPASSWORD=$POSTGRES_PASSWORD psql -U $POSTGRES_USER -h $POSTGRES_HOST -d $POSTGRES_DB -c "ALTER TABLE todo_items ADD COLUMN due_date DATE;"
+
+
 .PHONE: recreate-db
 recreate-db: wipe-db restart-db setup-db view-db ## Recreate the database
 	
