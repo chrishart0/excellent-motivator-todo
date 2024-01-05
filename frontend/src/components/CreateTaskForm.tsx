@@ -5,10 +5,18 @@ const CreateTaskForm = ({ onCreate }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState('ToDo');
+  const [dueDate, setDueDate] = useState(undefined);
+
+  // Function to get today's date in YYYY-MM-DD format
+  const getYesterdayString = () => {
+    const today = new Date();
+    today.setDate(today.getDate() - 1); // Set to yesterday
+    return today.toISOString().split('T')[0]; // Format to YYYY-MM-DD
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const newTask = { title, description, status };
+    const newTask = { title, description, status, "due_date": dueDate };
     onCreate(newTask); // Callback to handle the creation
   };
 
@@ -23,7 +31,6 @@ const CreateTaskForm = ({ onCreate }) => {
         sx={{ mt: 1 }}
       />
       <TextField
-        required
         fullWidth
         multiline
         rows={4}
@@ -43,6 +50,21 @@ const CreateTaskForm = ({ onCreate }) => {
           <MenuItem value="InProgress">In Progress</MenuItem>
           <MenuItem value="Done">Done</MenuItem>
         </Select>
+        {/* Due date picker limited to just day*/}
+        <TextField
+          fullWidth
+          label="Due Date"
+          type="date"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          sx={{ mt: 1 }}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          inputProps={{
+            min: getYesterdayString(), // Limit the date to today or future
+          }}
+        />
       </FormControl>
       <Button
         type="submit"
