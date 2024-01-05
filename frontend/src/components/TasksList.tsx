@@ -42,9 +42,6 @@ function TasksList({ items, setTasks, onDelete, onEdit }) {
       .sort((a, b) => b.position - a.position) // 200 is higher than 100
       .filter(item => item.id !== task.id); // Remove dragged task from the list if present
 
-
-    console.log("Destination items: ", destinationItems)
-
     let newPosition;
     if (destinationItems.length === 0) {
       // If the destination column is empty
@@ -160,45 +157,46 @@ function TasksList({ items, setTasks, onDelete, onEdit }) {
 
   return (
     <DragDropContext onDragEnd={handleOnDragEnd}>
-      <Box sx={{ overflowX: 'auto', width: '100%', WebkitOverflowScrolling: 'touch' }}>
-        <Typography variant="h2" gutterBottom>
-          Tasks
-        </Typography>
-        <Grid container spacing={2} sx={KanbanBoardStyle}>
-          {statuses.map((status) => (
-            <Grid key={status} item xs={4} sx={KanbanColumnStyle}>
-              <Typography variant="h6" component="div" sx={ColumnHeaderStyle}>
-                {status}
-              </Typography>
-              <StrictModeDroppable droppableId={status}>
+      <Box sx={{width: '100vw', }}>
+        <Box sx={{ overflowX: 'auto', minWidth:'100vw', width: '100vw',  WebkitOverflowScrolling: 'touch'}}>
+          <Grid container sx={KanbanBoardStyle}>
+            {statuses.map((status) => (
+              <StrictModeDroppable droppableId={status} >
                 {(provided) => (
-                  <div style={{minHeight: "40vh"}} {...provided.droppableProps} ref={provided.innerRef}>
-                    {getFilteredAndSortedItems(status).map((item, index) => (
-                      <Draggable key={item.id} draggableId={String(item.id)} index={index}>
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <TaskCard
-                              cardProps={item}
-                              handleOpen={handleOpenEditModel}
-                              onDelete={onDelete}
-                              onMoveUp={handleMoveUp}
-                              onMoveDown={handleMoveDown}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
+                  <div style={{ minHeight: "40vh"}} {...provided.droppableProps} ref={provided.innerRef}>
+                    <Grid key={status} item xs={4} sx={KanbanColumnStyle}>
+                      <Typography variant="h6" component="div" sx={ColumnHeaderStyle}>
+                        {status}
+                      </Typography>
+                      {getFilteredAndSortedItems(status).map((item, index) => (
+                        <Draggable key={item.id} draggableId={String(item.id)} index={index}>
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <TaskCard
+                                cardProps={item}
+                                handleOpen={handleOpenEditModel}
+                                onDelete={onDelete}
+                                onMoveUp={handleMoveUp}
+                                onMoveDown={handleMoveDown}
+                              />
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+
+                    </Grid>
                   </div>
                 )}
               </StrictModeDroppable>
-            </Grid>
-          ))}
-        </Grid>
+            ))}
+          </Grid>
+        </Box>
+
       </Box>
 
       <Modal open={editTaskModelOpen} onClose={handleCloseEditModel}>

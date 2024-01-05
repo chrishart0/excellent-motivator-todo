@@ -23,6 +23,9 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 
+// Components
+import WeatherWidget from '@/components/WeatherWidget';
+
 
 const LINKS = [
     { text: 'Home', href: '/', icon: HomeIcon },
@@ -57,11 +60,10 @@ const Sidebar = ({ isOpen, toggleDrawer, }: { isOpen: boolean; toggleDrawer: () 
 
     }, [isOpen, toggleDrawer]);
 
-    // Drawer closes on any click outside of it
     return (
         <>
             <AppBar position="fixed" sx={{ zIndex: 2000 }} onClick={toggleDrawer}>
-                <Toolbar sx={{ backgroundColor: 'background.paper' }}>
+                <Toolbar sx={{ backgroundColor: 'background.paper', display: 'flex', justifyContent: 'space-between' }}>
                     <IconButton
                         aria-label="open drawer"
                         sx={{ mr: 2 }}
@@ -71,6 +73,7 @@ const Sidebar = ({ isOpen, toggleDrawer, }: { isOpen: boolean; toggleDrawer: () 
                     <Typography variant="h6" color="text.primary">
                         Excellent Motivator
                     </Typography>
+                    <WeatherWidget />
                 </Toolbar>
             </AppBar>
             <Drawer
@@ -82,7 +85,7 @@ const Sidebar = ({ isOpen, toggleDrawer, }: { isOpen: boolean; toggleDrawer: () 
                         height: 'auto',
                         bottom: 0,
                         width: "30vw",
-                        maxWidth: "340px",
+                        minWidth: "200px",
                     },
                 }}
                 variant="temporary"

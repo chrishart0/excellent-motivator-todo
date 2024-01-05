@@ -1,7 +1,6 @@
 'use client'
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import ErrorComponent from '@/components/ErrorComponent';
@@ -29,19 +28,37 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [reloadFrequency, setReloadFrequency] = useState(60000);
+  const [secondsUntilRefresh, setSecondsUntilRefresh] = useState(60);
+
 
   useEffect(() => {
-    getItems()
-      .then(items => {
-        setTasks(items);
-        console.log(items);
-        setLoading(false);
-      })
-      .catch(error => {
-        setError(error.message);
-        setLoading(false);
-      });
+    const fetchData = () => {
+      getItems()
+        .then(items => {
+          setTasks(items);
+          setLoading(false);
+          setSecondsUntilRefresh(60); // Reset counter after fetch
+        })
+        .catch(error => {
+          setError(error.message);
+          setLoading(false);
+        });
+    };
+
+    fetchData();
+    const interval = setInterval(fetchData, reloadFrequency);
+
+    const countdown = setInterval(() => {
+      setSecondsUntilRefresh(seconds => seconds - 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(countdown);
+    };
   }, []);
+
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -81,11 +98,11 @@ export default function TasksPage() {
         },
         body: JSON.stringify(newTask),
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const createdTask = await response.json();
       setTasks([...tasks, createdTask]); // Update the state to include the new task
       console.log("Created task: ", createdTask);
@@ -112,32 +129,27 @@ export default function TasksPage() {
     }
   };
 
-  const onMoveUp = async (taskId, taskColumnList) => {
-    console.log("Move up task: ", taskId);
-
-    console.log("Task column list: ", taskColumnList);
-  }
-
-  const onMoveDown = async (taskId) => {
-    console.log("Move down task: ", taskId);
-  }
-
   return (
-    <Container>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <Typography variant="h1" gutterBottom>
-          Tasks Page
-        </Typography>
-        <CreateTaskForm onCreate={handleCreateTask} />
-        <TasksList items={tasks}  setTasks={setTasks} onDelete={handleDeleteTask} onEdit={handleUpdateTask}/>
-      </Box>
-    </Container>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: "100%",
+      }}
+    >
+      <Typography variant="h1" gutterBottom>
+        Tasks Page
+      </Typography>
+      <CreateTaskForm onCreate={handleCreateTask} />
+      <Typography variant="h2" gutterBottom>
+        Tasks
+      </Typography>
+      <Typography variant="h6">
+        Time until next refresh: {secondsUntilRefresh} seconds
+      </Typography>
+      <TasksList items={tasks} setTasks={setTasks} onDelete={handleDeleteTask} onEdit={handleUpdateTask} />
+    </Box>
   );
 }

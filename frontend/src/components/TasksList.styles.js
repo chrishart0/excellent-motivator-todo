@@ -13,26 +13,25 @@ export const EditItemModalStyle = {
 
 export const KanbanBoardStyle = {
     display: 'flex',
-    flexDirection: 'row', // Keep items in a row
     width: 'max-content', // Ensure the width extends as needed
-    paddingTop: '20px',
-    paddingLeft: "5px",
-    passingRight: "5px",
-    margin: "5px",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
+    margin: "1px",
     background: '#f4f5f7', // subtle background color
+    minWidth: '100%', 
+    justifyContent: 'center', 
+    // space items evenly
+
+    
 
 };
 
 export const KanbanColumnStyle = {
     bgcolor: "grey.200",
-    minHeight: "20vh",
+    height: "100%",
     padding: "5px",
     borderRadius: "5px",
     minWidth: '350px', // Adjust as needed
-    maxWidth: '450px', // Prevent columns from getting too wide on larger screens
     border: "1px solid rgba(0, 0, 0, 0.2)",
+    width: '100%',
     '&:hover': {
         boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.15)', // more pronounced shadow on hover
     },
