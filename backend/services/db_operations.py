@@ -39,8 +39,8 @@ def create_todo(item):
 
         # Prepare the SQL query
         cur.execute(
-            sql.SQL("INSERT INTO todo_items (id, title, description, status, created_at, updated_at, owner, position) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"),
-            (item['id'], item['title'], item['description'], item['status'], item['created_at'], item['updated_at'], item['owner'], new_position)
+            sql.SQL("INSERT INTO todo_items (id, title, description, status, created_at, updated_at, due_date, owner, position) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"),
+            (item['id'], item['title'], item['description'], item['status'], item['created_at'], item['updated_at'], item['due_date'], item['owner'], new_position)
         )
         conn.commit()
 

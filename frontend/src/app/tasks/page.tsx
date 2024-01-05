@@ -69,7 +69,7 @@ export default function TasksPage() {
   const handleUpdateTask = async (taskId, updatedTask) => {
     try {
       const response = await fetch(`${BASE_URL}/todos/${taskId}`, {
-        method: 'PUT', // or PATCH
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },

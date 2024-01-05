@@ -28,10 +28,13 @@ async def create_todo(todo: ToDoItem):
 
     # Add created and updated datestamps filter date to just the second
     item = todo.model_dump()
+
+    print(item)
     item['id'] = str(uuid.uuid4())
     item['created_at'] = datetime.utcnow().isoformat().split('.')[0]
     item['updated_at'] = datetime.utcnow().isoformat().split('.')[0]
     item['owner'] = "chris"
+    print("updated item",  item)
     
     final_item = db.create_todo(item)
     print(final_item)

@@ -14,10 +14,6 @@ build: ## Build the docker images
 run up: ## Run the app
 	docker-compose up
 
-.PHONY: setupDdb
-setupDdb: ## Initial setup of empty DDB on local
-	docker-compose exec api python /app/scripts/setup_dynamodb.py
-
 .PHONY: down
 down: ## Stop the app
 	docker-compose down

@@ -1,6 +1,7 @@
 import httpx
 import pytest
 import os
+from datetime import datetime
 
 # Define the base URL of your FastAPI application
 BASE_URL = "http://localhost:8010"
@@ -13,7 +14,7 @@ async def create_todo(request):
             "title": "Integration test todo item",
             "description": "Integration test todo item",
             "status": "ToDo",
-            "due_date": "2023-12-19T22:40:09.963543"
+            "due_date": "2024-01-05T01:52:50"
         })
         assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
         todo_id = response.json()['id']
@@ -49,7 +50,7 @@ async def test_post_todo():
                     "title": "Integration test todo item POST test",
                     "description": "Integration test todo item POST test",
                     "status": "ToDo",
-                    "due_date": "2023-12-19T22:40:09.963543"
+                    "due_date": "2024-01-05T01:52:50"
                     })
         
         # Check that the response status code is 200 (OK)
@@ -59,12 +60,36 @@ async def test_post_todo():
         # Parse the response JSON
         response_json = response.json()
 
-        # Check that the response JSON contains the correct file path
         assert response_json['title'] == "Integration test todo item POST test"
         assert response_json['description'] == "Integration test todo item POST test"
+        assert response_json['due_date'] == "2024-01-05T01:52:50"
 
         # Check that there is a position and it is greater than 0
         assert response_json['position'] > 0
+
+        # Cleanup
+        todo_id = response.json()['id']
+        async with httpx.AsyncClient() as client:
+            await client.delete(f"{BASE_URL}/todos/{todo_id}")
+
+@pytest.mark.asyncio
+async def test_post_todo_without_due_date():
+    async with httpx.AsyncClient() as client:
+        # Send a request to initiate the download
+        response = await client.post(f"{BASE_URL}/todos", json={
+                    "title": "Integration test todo item POST test",
+                    "description": "Integration test todo item POST test",
+                    "status": "ToDo",
+                    })
+        
+        # Check that the response status code is 200 (OK)
+        print(response.json())
+        assert response.status_code == 200, f"Unexpected status code: {response.status_code}"
+        
+        # Parse the response JSON
+        response_json = response.json()
+
+        assert response_json['due_date'] == None
 
         # Cleanup
         todo_id = response.json()['id']

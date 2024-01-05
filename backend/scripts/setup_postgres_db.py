@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS todo_items (
     status TEXT NOT NULL,
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
+    due_date TIMESTAMP WITHOUT TIME ZONE,
     owner TEXT NOT NULL,
     position DECIMAL
 );
@@ -34,8 +35,9 @@ example_item = {
     "title": "Example Item",
     "description": "This is an example item created by initial db setup script.",
     "status": "InProgress",  # or "ToDo", "Done"
-    "created_at": "2021-06-20 12:00:00",
-    "updated_at": "2021-06-20 12:00:00",
+    "created_at": "2024-01-10 12:00:00",
+    "updated_at": "2024-01-10 12:00:00",
+    "due_date": "2024-01-20 12:00:00",
     "owner": "chris"
     # Note: 'position' field is removed here
 }
@@ -46,8 +48,8 @@ new_position = cur.fetchone()[0]
 
 # Define the INSERT statement
 insert_item_query = """
-INSERT INTO todo_items (id, title, description, status, created_at, updated_at, owner, position)
-VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+INSERT INTO todo_items (id, title, description, status, created_at, updated_at, due_date, owner, position)
+VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
 """
 
 # Execute the INSERT statement with the new position
@@ -58,6 +60,7 @@ cur.execute(insert_item_query, (
     example_item['status'],
     example_item['created_at'],
     example_item['updated_at'],
+    example_item['due_date'],
     example_item['owner'],
     new_position  # Using the new_position calculated from the database
 ))
