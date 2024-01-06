@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
@@ -58,7 +58,7 @@ const isDatePastDue = (due_status: string): boolean => {
   }
 };
 
-const TaskCard: React.FC<TaskCardProps> = ({ cardProps, handleOpen, onDelete, onMoveUp, onMoveDown }) => {
+const TaskCard: React.FC<TaskCardProps> = React.memo(({ cardProps, handleOpen, onDelete, onMoveUp, onMoveDown }) => {
   if (!cardProps) return null;
   const dueDatePassed = cardProps.due_date ? isDatePastDue(cardProps.due_status) : false;
   console.log('dueDatePassed:', dueDatePassed);
@@ -144,6 +144,6 @@ const TaskCard: React.FC<TaskCardProps> = ({ cardProps, handleOpen, onDelete, on
       </Card>
     </Grid>
   );
-};
+});
 
 export default React.memo(TaskCard);

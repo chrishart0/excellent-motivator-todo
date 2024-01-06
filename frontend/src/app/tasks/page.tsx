@@ -8,7 +8,8 @@ import TasksList from '@/components/TasksList';
 import CreateTaskForm from '@/components/CreateTaskForm';
 
 
-const BASE_URL = "http://localhost:8010"
+// const BASE_URL = "http://localhost:8010"
+const BASE_URL = "http://192.168.1.216:8010"
 
 async function getItems() {
   try {

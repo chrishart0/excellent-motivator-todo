@@ -52,7 +52,8 @@ def get_db_connection(use_dict_cursor=False):
 
 def get_next_position(conn, status):
     with conn.cursor() as cur:
-        cur.execute("SELECT COALESCE(MAX(position), 0) + 100 FROM todo_items WHERE status = %s;", (status,))
+        #ToDo: Round to nearest 100
+        cur.execute("SELECT COALESCE(MAX(position), 0) + 100 FROM todo_items WHERE status = %s;", (status,)) 
         return cur.fetchone()[0]
 
 def create_todo(item):

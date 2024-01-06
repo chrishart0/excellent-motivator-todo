@@ -1,5 +1,7 @@
 # Python API for Productivity and Fitness Tracker
 
+Miro planning board: https://miro.com/welcomeonboard/ckdnbnhlbVFSWEEydXp2Q0k5YVJHQXc4ZllPNlhQMUpoV1JwSWhXbXg5TG5TQW9NcUwza1RDcTU2ZW9SeHRHYXwzNDU4NzY0NTMwNjI4NjE0MjA5fDI=?share_link_id=175794476292
+
 ## Setup and Installation
 
 Copy db.env.example into a new file called db.env and fill in a decent password
