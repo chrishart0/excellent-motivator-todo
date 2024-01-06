@@ -1,5 +1,5 @@
 // frontend/src/components/TasksList.tsx
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useMemo, memo } from 'react';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Box from '@mui/material/Box';
@@ -20,7 +20,7 @@ import StrictModeDroppable from '@/components/StrictModeDroppable';
 // Move styles to a separate file to keep your component file clean
 import { EditItemModalStyle, KanbanBoardStyle, KanbanColumnStyle, ColumnHeaderStyle } from "@/components/TasksList.styles"
 
-function TasksList({ items, setTasks, onDelete, onEdit }) {
+const TasksList = React.memo(({ items, setTasks, onDelete, onEdit })  => {
   const [editTaskModelOpen, setEditTaskModelOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState(null);
   const [showOnlyDueToday, setShowOnlyDueToday] = useState(false);
@@ -290,6 +290,6 @@ function TasksList({ items, setTasks, onDelete, onEdit }) {
       </Modal>
     </DragDropContext>
   );
-}
+});
 
 export default TasksList;
