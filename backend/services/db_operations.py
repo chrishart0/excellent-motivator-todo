@@ -1,35 +1,29 @@
 # ddb_operations.py
 import os
-import boto3
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from psycopg2 import sql
 from fastapi import HTTPException
-from botocore.exceptions import ClientError
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 
 # Set up logging
 import utils.logger as logger
 logger = logger.get_logger()
 
 
-
-# Initialize Boto3 DynamoDB
-dynamodb = boto3.resource('dynamodb', endpoint_url="http://dynamodb-local:8000")
-table = dynamodb.Table('ToDoItems')
-
 def item_post_processing(item):
     if 'position' not in item:
         item['position'] = 0
     try:
-        if 'due_date' in item and not item['due_date'] is None:
+        logger.info("Checking due status")
+        if item['status'] != 'Done' and 'due_date' in item and not item['due_date'] is None:
             due_date = item['due_date']
-            if item['due_date'] < datetime.utcnow():
+            if item['due_date'] < date.today():
+                logger.info("Due date is in the past")
                 item['due_status'] = "today"
                 # Due date is in the past, not counting today
                 # Round up due date to the next day
-                due_date = due_date.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
-                if due_date < datetime.utcnow():
+                if due_date < date.today():
                     item['due_status'] = "overdue"
             else:
                 item['due_status'] = None
@@ -37,7 +31,8 @@ def item_post_processing(item):
             item['due_status'] = None
     except Exception as e:
         item['due_status'] = None
-        logger.error("Couldn't process due_status for:", item)
+        logger.error(item['id'])
+        logger.error(f"Couldn't process due_status for: {item['id']}")
         logger.error(e)
 
     return item

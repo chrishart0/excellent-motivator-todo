@@ -39,10 +39,10 @@ async def create_todo(todo: ToDoItem):
     item['created_at'] = datetime.utcnow().isoformat().split('.')[0]
     item['updated_at'] = datetime.utcnow().isoformat().split('.')[0]
     item['owner'] = "chris"
-    print("item",  item)
+    # print("item",  item)
     
     final_item = db.create_todo(item)
-    print(final_item)
+    # print(final_item)
 
   
     return final_item
@@ -60,7 +60,7 @@ async def update_todo(id: str, todo_update: ToDoItem):
     try:
         item = todo_update.model_dump()
         item['updated_at'] = datetime.utcnow().isoformat().split('.')[0]
-        print("update_todo:", item)
+        # print("update_todo:", item)
         return db.update_todo(id, item)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

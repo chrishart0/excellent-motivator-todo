@@ -62,7 +62,7 @@ async def test_post_todo():
 
         assert response_json['title'] == "Integration test todo item POST test"
         assert response_json['description'] == "Integration test todo item POST test"
-        assert response_json['due_date'] == "2024-01-05T01:52:50"
+        assert response_json['due_date'] == "2024-01-05"
 
         # Check that there is a position and it is greater than 0
         assert response_json['position'] > 0
