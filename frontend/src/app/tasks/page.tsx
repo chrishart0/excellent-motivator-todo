@@ -56,12 +56,6 @@ export default function TasksPage() {
     return <ErrorComponent errorMessage={`Error loading tasks: ${error}`} />;
   }
 
-  const handleRefresh = (newTasks) => {
-    setTasks(newTasks);
-    setLoading(false);
-    setSecondsUntilRefresh(60); // Reset counter after fetch
-  };
-
   const handleUpdateTask = async (taskId, updatedTask) => {
     try {
       const response = await fetch(`${BASE_URL}/todos/${taskId}`, {
