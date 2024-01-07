@@ -1,12 +1,13 @@
 "use client";
 import * as React from "react";
 import { useState, useEffect, useCallback } from "react";
-
+import { v4 as uuid } from "uuid";
 // MUI
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Stack from "@mui/material/Stack";
+
 
 // Custom Components
 import ErrorComponent from "@/components/ErrorComponent";
@@ -41,12 +42,12 @@ export default function TasksPage() {
   };
 
   const addError = useCallback((error: Error) => {
-    setErrorList((prev) => [...prev, error]);
+    const id = uuid();
+    setErrorList((prev) => [...prev, {error, id}]);
   }, []);
 
   function ErrorListDispay() {
     if (errorList.length === 0) return null;
-
 
     return (
       <Box
@@ -60,7 +61,7 @@ export default function TasksPage() {
       >
         <Stack sx={{ width: "100%" }} spacing={2}>
           {errorList.map((error) => (
-            <ErrorComponent key={error} errorMessage={error} />
+            <ErrorComponent key={error.id} errorMessage={error.error} />
           ))}
         </Stack>
       </Box>
