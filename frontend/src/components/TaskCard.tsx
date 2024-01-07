@@ -98,9 +98,9 @@ const TaskCard: React.FC<TaskCardProps> = React.memo(
               <Typography variant="h5" component="div">
                 {cardProps.title}
               </Typography>
-              <Typography sx={{ mb: 1.5 }} color="text.secondary">
+              {/* <Typography sx={{ mb: 1.5 }} color="text.secondary">
                 Owner: {cardProps.owner}
-              </Typography>
+              </Typography> */}
               <Typography variant="body2" style={{ whiteSpace: "pre-wrap" }}>
                 {cardProps.description}
               </Typography>
