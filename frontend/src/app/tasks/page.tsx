@@ -30,9 +30,36 @@ async function getItems() {
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
-  const [error, setError] = useState(null);
+  const [errorList, setErrorList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshFrequency, setRefreshFrequency] = useState(60000);
+
+  type Error = {
+    message: string;
+  };
+
+  const addError = useCallback( (error: Error) => {
+    setErrorList((prev) => [...prev, error]);
+  }
+  , []);
+
+  function ErrorListDispay() {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        {errorList.map((error) => (
+          <ErrorComponent errorMessage={`Error loading tasks: ${error}`} />
+        ))}
+      </Box>
+    );
+  }
 
   useEffect(() => {
     const fetchData = () => {
@@ -42,7 +69,7 @@ export default function TasksPage() {
           setLoading(false);
         })
         .catch((error) => {
-          setError(error.message);
+          addError(error.message);
           setLoading(false);
         });
     };
@@ -70,7 +97,7 @@ export default function TasksPage() {
       console.log("Updated task: ", newTask);
       setTasks(tasks.map((task) => (task.id === taskId ? newTask : task))); // Update the state to include the new task
     } catch (error) {
-      setError(error.message);
+      addError(error.message);
       console.error("Failed to update task:", error);
     }
   };
@@ -93,7 +120,7 @@ export default function TasksPage() {
       setTasks([...tasks, createdTask]); // Update the state to include the new task
       console.log("Created task: ", createdTask);
     } catch (error) {
-      setError(error.message);
+      addError(error.message);
       console.error("Failed to create task:", error);
     }
   };
@@ -110,14 +137,14 @@ export default function TasksPage() {
 
       setTasks(tasks.filter((task) => task.id !== taskId)); // Remove the task from the UI
     } catch (error) {
-      setError(error.message);
+      addError(error.message);
       console.error("Failed to delete task:", error);
     }
   };
 
   return (
     <>
-      <ErrorComponent errorMessage={`Error loading tasks: ${error}`} />
+      <ErrorListDispay/>
       <Box
         sx={{
           display: "flex",

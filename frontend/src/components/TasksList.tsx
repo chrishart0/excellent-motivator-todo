@@ -239,7 +239,7 @@ const TasksList = React.memo(({ items, setTasks, onDelete, onEdit })  => {
         <Box sx={{ overflowX: 'auto', minWidth: '100vw', width: '100vw', WebkitOverflowScrolling: 'touch' }}>
           <Grid container sx={KanbanBoardStyle}>
             {statuses.map((status) => (
-              <StrictModeDroppable droppableId={status} >
+              <StrictModeDroppable key={status} droppableId={status} >
                 {(provided) => (
                   <div style={{ minHeight: "40vh" }} {...provided.droppableProps} ref={provided.innerRef}>
                     <Grid key={status} item xs={4} sx={KanbanColumnStyle}>
