@@ -32,8 +32,7 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [reloadFrequency, setReloadFrequency] = useState(60000);
-  const [secondsUntilRefresh, setSecondsUntilRefresh] = useState(60);
+  const [refreshFrequency, setRefreshFrequency] = useState(60000);
 
   useEffect(() => {
     const fetchData = () => {
@@ -136,7 +135,13 @@ export default function TasksPage() {
       <Typography variant="h2" gutterBottom>
         Tasks
       </Typography>
-      <TaskRefresher fetchTasks={getItems} onRefresh={setTasks} refreshInterval={10000} />
+      <Box sx={{ mb: "1vh" }}>
+        <TaskRefresher
+          fetchTasks={getItems}
+          onRefresh={setTasks}
+          refreshInterval={refreshFrequency}
+        />
+      </Box>
       <TasksList
         items={tasks}
         setTasks={setTasks}
