@@ -5,6 +5,8 @@ import { useState, useEffect, useCallback } from "react";
 // MUI
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import Modal from "@mui/material/Modal";
+import Stack from "@mui/material/Stack";
 
 // Custom Components
 import ErrorComponent from "@/components/ErrorComponent";
@@ -38,12 +40,14 @@ export default function TasksPage() {
     message: string;
   };
 
-  const addError = useCallback( (error: Error) => {
+  const addError = useCallback((error: Error) => {
     setErrorList((prev) => [...prev, error]);
-  }
-  , []);
+  }, []);
 
   function ErrorListDispay() {
+    if (errorList.length === 0) return null;
+
+
     return (
       <Box
         sx={{
@@ -54,9 +58,11 @@ export default function TasksPage() {
           width: "100%",
         }}
       >
-        {errorList.map((error) => (
-          <ErrorComponent errorMessage={`Error loading tasks: ${error}`} />
-        ))}
+        <Stack sx={{ width: "100%" }} spacing={2}>
+          {errorList.map((error) => (
+            <ErrorComponent key={error} errorMessage={error} />
+          ))}
+        </Stack>
       </Box>
     );
   }
@@ -144,7 +150,7 @@ export default function TasksPage() {
 
   return (
     <>
-      <ErrorListDispay/>
+      <ErrorListDispay />
       <Box
         sx={{
           display: "flex",

@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import CloseIcon from "@mui/icons-material/Close";
@@ -30,45 +28,30 @@ const ErrorComponent: React.FC<ErrorComponentProps> = ({
     }
   }, [autoDismiss, dismissTime]);
 
-  const handleClose = () => setOpen(false);
-
   return (
-    <Modal
-      open={open}
-      onClose={handleClose}
-      aria-labelledby="error-modal-title"
-      aria-describedby="error-modal-description"
-    >
-      <Box
-        sx={{
-          margin: "auto",
-          width: "80%",
-          marginTop: "10%",
-        }}
-      >
-        <Alert
-          variant="filled"
-          severity="error"
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => {
-                setOpen(false);
-              }}
-            >
-              <CloseIcon fontSize="inherit" />
-            </IconButton>
-          }
+    <Alert
+      variant="filled"
+      severity="error"
+      // Hide
+      sx={{ display: open ? "flex" : "none" }}
+      action={
+        <IconButton
+          aria-label="close"
+          color="inherit"
+          size="small"
+          onClick={() => {
+            setOpen(false);
+          }}
         >
-          <AlertTitle>Error</AlertTitle>
-          <Typography id="error-modal-description" sx={{ mt: 2 }}>
-            {errorMessage}
-          </Typography>
-        </Alert>
-      </Box>
-    </Modal>
+          <CloseIcon fontSize="inherit" />
+        </IconButton>
+      }
+    >
+      <AlertTitle>Error</AlertTitle>
+      <Typography id="error-modal-description" sx={{ mt: 2 }}>
+        {errorMessage}
+      </Typography>
+    </Alert>
   );
 };
 
