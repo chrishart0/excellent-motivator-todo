@@ -51,9 +51,6 @@ export default function TasksPage() {
   }, []);
 
   if (loading) return <p>Loading...</p>;
-  if (error) {
-    return <ErrorComponent errorMessage={`Error loading tasks: ${error}`} />;
-  }
 
   const handleUpdateTask = async (taskId, updatedTask) => {
     try {
@@ -119,35 +116,38 @@ export default function TasksPage() {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100%",
-      }}
-    >
-      <Typography variant="h1" gutterBottom>
-        Tasks Page
-      </Typography>
-      <CreateTaskForm onCreate={handleCreateTask} />
-      <Typography variant="h2" gutterBottom>
-        Tasks
-      </Typography>
-      <Box sx={{ mb: "1vh" }}>
-        <TaskRefresher
-          fetchTasks={getItems}
-          onRefresh={setTasks}
-          refreshInterval={refreshFrequency}
+    <>
+      <ErrorComponent errorMessage={`Error loading tasks: ${error}`} />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        <Typography variant="h1" gutterBottom>
+          Tasks Page
+        </Typography>
+        <CreateTaskForm onCreate={handleCreateTask} />
+        <Typography variant="h2" gutterBottom>
+          Tasks
+        </Typography>
+        <Box sx={{ mb: "1vh" }}>
+          <TaskRefresher
+            fetchTasks={getItems}
+            onRefresh={setTasks}
+            refreshInterval={refreshFrequency}
+          />
+        </Box>
+        <TasksList
+          items={tasks}
+          setTasks={setTasks}
+          onDelete={handleDeleteTask}
+          onEdit={handleUpdateTask}
         />
       </Box>
-      <TasksList
-        items={tasks}
-        setTasks={setTasks}
-        onDelete={handleDeleteTask}
-        onEdit={handleUpdateTask}
-      />
-    </Box>
+    </>
   );
 }

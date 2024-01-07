@@ -35,9 +35,7 @@ const formatDate = (dateString: string): string => {
   if (!dateString) return '';
   try {
     // Updated to show only the date in a nice format (e.g., January 1, 2024)
-    console.log('dateString:', dateString);
     const formattedDate = format(new Date(dateString), 'MMMM d, yyyy');
-    console.log('formattedDate:', formattedDate);
     return formattedDate
   } catch (error) {
     console.error('Invalid date format:', error);
@@ -61,8 +59,6 @@ const isDatePastDue = (due_status: string): boolean => {
 const TaskCard: React.FC<TaskCardProps> = React.memo(({ cardProps, handleOpen, onDelete, onMoveUp, onMoveDown }) => {
   if (!cardProps) return null;
   const dueDatePassed = cardProps.due_date ? isDatePastDue(cardProps.due_status) : false;
-  console.log('dueDatePassed:', dueDatePassed);
-  console.log('cardProps:', cardProps);
 
   return (
     <Grid item xs={12}>
