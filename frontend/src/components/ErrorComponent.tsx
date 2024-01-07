@@ -6,23 +6,29 @@ import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import CloseIcon from "@mui/icons-material/Close";
 
+type ErrorId = string;
+
 type ErrorComponentProps = {
   errorMessage: string;
+  errorId: string;
   autoDismiss?: boolean; // Optional auto-dismiss feature
   dismissTime?: number; // Time in milliseconds after which the error should be dismissed
+  dismissError: (errorId: ErrorId) => void; // Optional callback to dismiss the error
 };
 
 const ErrorComponent: React.FC<ErrorComponentProps> = ({
   errorMessage,
+  errorId,
   autoDismiss = true,
-  dismissTime = 100000, // Defaults to 10 seconds
+  dismissTime = 6000, // Defaults to 6 seconds
+  dismissError,
 }) => {
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
     if (autoDismiss) {
       const timer = setTimeout(() => {
-        setOpen(false);
+        dismissError(errorId);
       }, dismissTime);
       return () => clearTimeout(timer);
     }
@@ -40,7 +46,7 @@ const ErrorComponent: React.FC<ErrorComponentProps> = ({
           color="inherit"
           size="small"
           onClick={() => {
-            setOpen(false);
+            dismissError(errorId);
           }}
         >
           <CloseIcon fontSize="inherit" />

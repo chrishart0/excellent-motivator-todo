@@ -43,12 +43,18 @@ export default function TasksPage() {
 
   const addError = useCallback((error: Error) => {
     const id = uuid();
-    setErrorList((prev) => [...prev, {error, id}]);
+    setErrorList((prev) => [...prev, { error: error, id }]);
   }, []);
 
-  function ErrorListDispay() {
+  const dismissError = useCallback((id: string) => {
+    setErrorList((prev) => prev.filter((error) => error.id !== id));
+  }, []);
+
+  function ErrorListDisplay() {
     if (errorList.length === 0) return null;
 
+    console.log("ErrorListDisplay: ", errorList);
+  
     return (
       <Box
         sx={{
@@ -57,11 +63,21 @@ export default function TasksPage() {
           justifyContent: "center",
           alignItems: "center",
           width: "100%",
+          paddingTop: "5vh",
+          // Float the error list above the rest of the content and follow screen 
+          position: "sticky",
+          zIndex: 100,
+          top: 50,
         }}
       >
         <Stack sx={{ width: "100%" }} spacing={2}>
           {errorList.map((error) => (
-            <ErrorComponent key={error.id} errorMessage={error.error} />
+            <ErrorComponent 
+              key={error.id} 
+              errorMessage={error.error} 
+              errorId={error.id}
+              dismissError={() => dismissError(error.id)} // Pass a function to dismiss this specific error
+            />
           ))}
         </Stack>
       </Box>
@@ -151,7 +167,7 @@ export default function TasksPage() {
 
   return (
     <>
-      <ErrorListDispay />
+      <ErrorListDisplay />
       <Box
         sx={{
           display: "flex",
