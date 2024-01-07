@@ -1,15 +1,19 @@
-'use client'
-import * as React from 'react';
-import { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import ErrorComponent from '@/components/ErrorComponent';
-import TasksList from '@/components/TasksList';
-import CreateTaskForm from '@/components/CreateTaskForm';
+"use client";
+import * as React from "react";
+import { useState, useEffect, useCallback } from "react";
 
+// MUI
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+
+// Custom Components
+import ErrorComponent from "@/components/ErrorComponent";
+import TasksList from "@/components/TasksList";
+import CreateTaskForm from "@/components/CreateTaskForm";
+import TaskRefresher from "@/components/TaskRefresher";
 
 // const BASE_URL = "http://localhost:8010"
-const BASE_URL = "http://192.168.1.216:8010"
+const BASE_URL = "http://192.168.1.216:8010";
 
 async function getItems() {
   try {
@@ -20,10 +24,9 @@ async function getItems() {
     return await response.json();
   } catch (error) {
     console.error("Failed to fetch tasks:", error);
-    throw error;  // Re-throw the error to be caught in the component
+    throw error; // Re-throw the error to be caught in the component
   }
 }
-
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState([]);
@@ -32,47 +35,39 @@ export default function TasksPage() {
   const [reloadFrequency, setReloadFrequency] = useState(60000);
   const [secondsUntilRefresh, setSecondsUntilRefresh] = useState(60);
 
-
   useEffect(() => {
     const fetchData = () => {
       getItems()
-        .then(items => {
+        .then((items) => {
           setTasks(items);
           setLoading(false);
-          setSecondsUntilRefresh(60); // Reset counter after fetch
         })
-        .catch(error => {
+        .catch((error) => {
           setError(error.message);
           setLoading(false);
         });
     };
 
     fetchData();
-    const interval = setInterval(fetchData, reloadFrequency);
-
-    const countdown = setInterval(() => {
-      setSecondsUntilRefresh(seconds => seconds - 1);
-    }, 1000);
-
-    return () => {
-      clearInterval(interval);
-      clearInterval(countdown);
-    };
   }, []);
 
-
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
   if (error) {
     return <ErrorComponent errorMessage={`Error loading tasks: ${error}`} />;
   }
 
+  const handleRefresh = (newTasks) => {
+    setTasks(newTasks);
+    setLoading(false);
+    setSecondsUntilRefresh(60); // Reset counter after fetch
+  };
+
   const handleUpdateTask = async (taskId, updatedTask) => {
     try {
       const response = await fetch(`${BASE_URL}/todos/${taskId}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(updatedTask),
       });
@@ -83,7 +78,7 @@ export default function TasksPage() {
 
       const newTask = await response.json();
       console.log("Updated task: ", newTask);
-      setTasks(tasks.map(task => task.id === taskId ? newTask : task)); // Update the state to include the new task
+      setTasks(tasks.map((task) => (task.id === taskId ? newTask : task))); // Update the state to include the new task
     } catch (error) {
       setError(error.message);
       console.error("Failed to update task:", error);
@@ -93,9 +88,9 @@ export default function TasksPage() {
   const handleCreateTask = async (newTask) => {
     try {
       const response = await fetch(`${BASE_URL}/todos`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(newTask),
       });
@@ -116,14 +111,14 @@ export default function TasksPage() {
   const handleDeleteTask = async (taskId) => {
     try {
       const response = await fetch(`${BASE_URL}/todos/${taskId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      setTasks(tasks.filter(task => task.id !== taskId)); // Remove the task from the UI
+      setTasks(tasks.filter((task) => task.id !== taskId)); // Remove the task from the UI
     } catch (error) {
       setError(error.message);
       console.error("Failed to delete task:", error);
@@ -133,10 +128,10 @@ export default function TasksPage() {
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
         width: "100%",
       }}
     >
@@ -147,10 +142,13 @@ export default function TasksPage() {
       <Typography variant="h2" gutterBottom>
         Tasks
       </Typography>
-      <Typography variant="h6">
-        Time until next refresh: {secondsUntilRefresh} seconds
-      </Typography>
-      <TasksList items={tasks} setTasks={setTasks} onDelete={handleDeleteTask} onEdit={handleUpdateTask} />
+      <TaskRefresher fetchTasks={getItems} onRefresh={setTasks} refreshInterval={10000} />
+      <TasksList
+        items={tasks}
+        setTasks={setTasks}
+        onDelete={handleDeleteTask}
+        onEdit={handleUpdateTask}
+      />
     </Box>
   );
 }
