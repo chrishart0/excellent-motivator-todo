@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-import Alert from "@mui/material/Alert";
-import Container from "@mui/material/Container";
-import Modal from "@mui/material/Modal";
-import Button from "@mui/material/Button";
-import ReportProblemIcon from "@mui/icons-material/ReportProblem";
-import Stack from "@mui/material/Stack";
+import React, { useEffect, useState } from 'react';
+import Modal from '@mui/material/Modal';
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from '@mui/material/Button';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 
 type ErrorComponentProps = {
   errorMessage: string;
@@ -19,21 +18,18 @@ const ErrorComponent: React.FC<ErrorComponentProps> = ({
   autoDismiss = true,
   dismissTime = 5000, // Defaults to 5 seconds
 }) => {
-  const [visible, setVisible] = useState(true);
+  const [open, setOpen] = useState(true);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
     if (autoDismiss) {
-      timer = setTimeout(() => {
-        setVisible(false);
+      const timer = setTimeout(() => {
+        setOpen(false);
       }, dismissTime);
+      return () => clearTimeout(timer);
     }
-    return () => {
-      if (timer) clearTimeout(timer); // Clean up the timer
-    };
   }, [autoDismiss, dismissTime]);
 
-  if (!visible) return null; // Don't render the component if it's not visible
+  const handleClose = () => setOpen(false);
 
   return (
     <Modal
