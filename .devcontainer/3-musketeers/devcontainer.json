@@ -23,18 +23,18 @@
 				"ms-vscode.makefile-tools"
 			]
 		},
-		"workspaceSettings": {
-			// Need this because VScode keeps trying to eat up the ports 3 musketeers uses 
-			// VScode will consume the port after you use make run or docker compose up, if you restart the container port will stay in use then docker won't let you reopen container
-			"remote.portsAttributes": { 
-				"8010": {
-					"onAutoForward": "ignore"
-				},
-				"8010": {
-					"onAutoForward": "ignore"
-				}
-			}
-		}
+		// "workspaceSettings": {
+		// 	// Need this because VScode keeps trying to eat up the ports 3 musketeers uses 
+		// 	// VScode will consume the port after you use make run or docker compose up, if you restart the container port will stay in use then docker won't let you reopen container
+		// 	"remote.portsAttributes": { 
+		// 		"8010": {
+		// 			"onAutoForward": "ignore"
+		// 		},
+		// 		"8020": {
+		// 			"onAutoForward": "ignore"
+		// 		}
+		// 	}
+		// }
 	},
 
 	// Mount Docker Socket: ensures that the Docker CLI within dev container can interact with the Docker daemon on the host
@@ -54,10 +54,8 @@
 	"postCreateCommand": "make restart",
 
 	"features": {
-		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
-			"version": "latest",
-			"enableNonRootDocker": "true",
-			"moby": "true"
+		"features": {
+			"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
 		},
 		"ghcr.io/devcontainers/features/node:1": {
 			"nodeGypDependencies": true,
@@ -75,7 +73,7 @@
 	},
 
 	// Use this environment variable if you need to bind mount your local source code into a new container.
-	"remoteEnv": {
-		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
-	}
+	// "remoteEnv": {
+	// 	"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+	// }
 }

@@ -4,7 +4,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from psycopg2 import sql
 from fastapi import HTTPException
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 
 # Set up logging
 import utils.logger as logger

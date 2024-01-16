@@ -14,6 +14,9 @@ build: ## Build the docker images
 run up: ## Run the app
 	docker-compose up
 
+_run-api: ## Run api locally instead of in docker
+	uvicorn main:app --host 0.0.0.0 --port 8010 --reload
+
 .PHONY: down
 down: ## Stop the app
 	docker-compose down

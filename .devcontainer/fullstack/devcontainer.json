@@ -1,0 +1,59 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/docker-outside-of-docker-compose
+{
+	"name": "FastAPI Backend Development",
+	"dockerComposeFile": ["../../docker-compose.yml"],
+	"service": "api",
+	"workspaceFolder": "/app",
+	// Run DB service on container start
+	"runServices": ["postgres"],
+
+	"portsAttributes": {
+		"3000": {
+			"label": "Frontend",
+			"onAutoForward": "notify"
+		},
+		"8010": {
+			"label": "API",
+			"onAutoForward": "notify"
+		}
+	},
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"dbaeumer.vscode-eslint", 
+				"esbenp.prettier-vscode",
+				"streetsidesoftware.code-spell-checker",
+				"GitHub.copilot",
+				"GitHub.copilot-chat",
+				"ms-python.vscode-pylance",
+				"wayou.vscode-todo-highlight",
+				"wix.vscode-import-cost",
+				"ms-vscode.makefile-tools"
+			]
+		}
+	},
+
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {
+			"nodeGypDependencies": true,
+			"version": "lts",
+			"nvmVersion": "latest"
+		},
+		"ghcr.io/devcontainers/features/python:1": {
+			"installTools": true,
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/ts-node:1": {
+			"version": "latest"
+		},
+		"ghcr.io/jungaretti/features/make:1": {}
+	},
+
+	// Install python dependencies on container start
+	"postCreateCommand": "pip install -r backend/requirements.txt --upgrade"
+
+	
+}
