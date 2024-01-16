@@ -19,8 +19,7 @@ down: ## Stop the app
 	docker-compose down
 
 .PHONY: restart
-restart: ## Restart the app
-	docker-compose restart
+restart: down up ## Restart the app
 
 .PHONY: test
 test: ## Run the tests

@@ -1,5 +1,6 @@
 .data/
 __pycache__/
-backend/.coverage
 .pytest_cache/
 *.env
+coverage.xml
+*.coverage

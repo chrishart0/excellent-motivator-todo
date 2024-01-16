@@ -27,11 +27,24 @@ make build
 
 make run
 ```
+
+#### Connecting with VScode devcontainer
+> https://code.visualstudio.com/remote/advancedcontainers/connect-multiple-containers#_connect-to-multiple-containers-in-multiple-vs-code-windows
+
+* Open a VS Code window at the root level of the project.
+* Ensure you have the VScode `Dev Containers` extension installed, it's in the VScode recommend extensions for the repo
+* In the bottom left hand corner of VScode click the `Open a Remote Container` symbol which looks like two stacked `><`
+  * Choose `reopen in container` from the dropdown list > select `3 Musketeers Full Stack Development`
+
+VScode will launch a new window, the container will build, then you may launch the service: follow the other setup steps from withing the dev container. 
+
+
 #### Setup Postgres SQL db
 Once the containers are up and running, you can run the initial setup script to create the SQL DB
 ```shell
 make setup-db
 ```
+
 
 #### Using PG Admin
 If you'd like to get a GUI view for the data in the DB, you may use the pgAdmin container. 

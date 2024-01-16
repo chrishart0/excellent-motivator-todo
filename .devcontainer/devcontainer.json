@@ -1,0 +1,81 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/docker-outside-of-docker
+{
+	"name": "3 Musketeers Full Stack Development",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
+
+	"customizations": {
+		"settings": { 
+			"terminal.integrated.shell.linux": "/bin/bash"
+		},
+		"vscode": {
+			"extensions": [
+				"ms-python.python",
+				"dbaeumer.vscode-eslint", 
+				"esbenp.prettier-vscode",
+				"streetsidesoftware.code-spell-checker",
+				"GitHub.copilot",
+				"GitHub.copilot-chat",
+				"ms-python.vscode-pylance",
+				"wayou.vscode-todo-highlight",
+				"wix.vscode-import-cost",
+				"ms-vscode.makefile-tools"
+			]
+		},
+		"workspaceSettings": {
+			// Need this because VScode keeps trying to eat up the ports 3 musketeers uses 
+			// VScode will consume the port after you use make run or docker compose up, if you restart the container port will stay in use then docker won't let you reopen container
+			"remote.portsAttributes": { 
+				"8010": {
+					"onAutoForward": "ignore"
+				},
+				"8010": {
+					"onAutoForward": "ignore"
+				}
+			}
+		}
+	},
+
+	// Mount Docker Socket: ensures that the Docker CLI within dev container can interact with the Docker daemon on the host
+	"mounts": [
+		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+	],
+
+	// "forwardPorts": [
+	// 	8010, // FastAPI
+	// 	5432, // PostgreSQL
+	// 	3000, // React
+	// 	5050 // PG Admin
+	// ],
+	// "postCreateCommand": "pip install -r requirements.txt",
+
+	// Startup 3 musketeers services on container start
+	"postCreateCommand": "make restart",
+
+	"features": {
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+			"version": "latest",
+			"enableNonRootDocker": "true",
+			"moby": "true"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"nodeGypDependencies": true,
+			"version": "lts",
+			"nvmVersion": "latest"
+		},
+		"ghcr.io/devcontainers/features/python:1": {
+			"installTools": true,
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/ts-node:1": {
+			"version": "latest"
+		},
+		"ghcr.io/jungaretti/features/make:1": {}
+	},
+
+	// Use this environment variable if you need to bind mount your local source code into a new container.
+	"remoteEnv": {
+		"LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+	}
+}

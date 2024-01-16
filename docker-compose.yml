@@ -1,15 +1,16 @@
 version: '3.8'
 services:
   api:
-    build: ./backend
+    build:
+      context: ./backend
+      target: development
     container_name: excellent-motivator-api
     env_file:
-      - db.env  # Use variables from the db.env file
+      - db.env  
     ports:
       - "8010:8010"
     volumes:
-      - ./backend:/app  # Mounts the local backend directory to /app in the container 
-      - ~/.aws/:/root/.aws
+      - ./:/app # mount the code to the container, yes the whole file system so we can access .git/ and other needed things while deving
     depends_on: 
       - postgres
 
